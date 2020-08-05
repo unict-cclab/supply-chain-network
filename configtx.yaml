@@ -470,9 +470,9 @@ Application: &ApplicationDefaults
     # For Application policies, their canonical path is
     #   /Channel/Application/<PolicyName>
     Policies: &ApplicationDefaultPolicies
-        LifecycleEndorsement:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Endorsement"
+        #LifecycleEndorsement:
+        #    Type: ImplicitMeta
+        #    Rule: "MAJORITY Endorsement"
         Endorsement:
             Type: ImplicitMeta
             Rule: "MAJORITY Endorsement"
@@ -482,12 +482,15 @@ Application: &ApplicationDefaults
         Writers:
             Type: ImplicitMeta
             Rule: "ANY Writers"
-        Admins:
-            Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
         #Admins:
-        #    Type: Signature
-        #    Rule: "OR('RegulatoryDepartmentMSP.admin')"
+        #    Type: ImplicitMeta
+        #    Rule: "MAJORITY Admins"
+        Admins:
+            Type: Signature
+            Rule: "OR('RegulatoryDepartmentMSP.admin')"
+        LifecycleEndorsement:
+            Type: Signature
+            Rule: "OR('RegulatoryDepartmentMSP.member')"
 
     # Capabilities describes the application level capabilities, see the
     # dedicated Capabilities section elsewhere in this file for a full
