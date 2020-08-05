@@ -49,6 +49,10 @@ class SupplyChainContract extends Contract {
 
     async addRoleSet(ctx, orgId, roles) {
         roles = JSON.parse(roles);
+
+        if(roles.length === 0)
+            throw new Error('Roles array must not be empty');
+
         if((new Set(roles)).size != roles.length)
             throw new Error('There are duplicates in roles array');
 
