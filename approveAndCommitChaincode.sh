@@ -6,7 +6,7 @@ get_pods() {
 # Exit on errors
 set -e
 
-export CC_PACKAGE_ID=supplyChain_1:373a34b3b96f0180b7c7e74382c9e82f9563e41ccc2cfb93f66cef1ffb2716f2
+export CC_PACKAGE_ID=supplyChain_1:10c03a5e09e964d1ea60dc30f3411faa696558a6b4befd7d96a4d9ae80ec825d
 
 # Use CLI shell to create channel
 
