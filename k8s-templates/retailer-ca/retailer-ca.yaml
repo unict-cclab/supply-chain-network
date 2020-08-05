@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: rca-retailer
+    labels:
+        app: rca-retailer-root
+spec:
+    selector:
+        matchLabels:
+            app: rca-retailer-root
+    template:
+        metadata: 
+            labels:
+                app: rca-retailer-root
+        spec:
+            containers:
+              - name: rca-retailer
+                image: hyperledger/fabric-ca:1.4.7
+                imagePullPolicy: IfNotPresent
+                command: ["fabric-ca-server", "start", "-b", "rca-retailer-admin:rca-retailer-adminpw", "--port", "7058"]
+                volumeMounts:
+                  - mountPath: /tmp/hyperledger/fabric-ca
+                    name: ca-mount
+                env:
+                - name: FABRIC_CA_HOME
+                  value: "/tmp/hyperledger/fabric-ca/crypto"
+                - name: FABRIC_CA_SERVER_TLS_ENABLED
+                  value: "true"
+                - name: FABRIC_CA_SERVER_CSR_CN
+                  value: "rca-retailer"
+                - name: FABRIC_CA_SERVER_CSR_HOSTS
+                  value: "${IP}"
+                - name: FABRIC_CA_SERVER_DEBUG
+                  value: "true"
+            volumes:
+              - name: ca-mount
+                hostPath:
+                  path: /hyperledger/retailer/ca

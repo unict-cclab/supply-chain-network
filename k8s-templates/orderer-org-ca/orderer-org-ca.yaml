@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: rca-orderer-org
+    labels:
+        app: rca-orderer-org-root
+spec:
+    selector:
+        matchLabels:
+            app: rca-orderer-org-root
+    template:
+        metadata: 
+            labels:
+                app: rca-orderer-org-root
+        spec:
+            containers:
+              - name: rca-orderer-org
+                image: hyperledger/fabric-ca:1.4.7
+                imagePullPolicy: IfNotPresent
+                command: ["fabric-ca-server", "start", "-b", "rca-orderer-org-admin:rca-orderer-org-adminpw", "--port", "7053"]
+                volumeMounts:
+                  - mountPath: /tmp/hyperledger/fabric-ca
+                    name: ca-mount
+                env:
+                - name: FABRIC_CA_HOME
+                  value: "/tmp/hyperledger/fabric-ca/crypto"
+                - name: FABRIC_CA_SERVER_TLS_ENABLED
+                  value: "true"
+                - name: FABRIC_CA_SERVER_CSR_CN
+                  value: "rca-orderer-org"
+                - name: FABRIC_CA_SERVER_CSR_HOSTS
+                  value: "${IP}"
+                - name: FABRIC_CA_SERVER_DEBUG
+                  value: "true"
+            volumes:
+              - name: ca-mount
+                hostPath:
+                  path: /hyperledger/orderer-org/ca

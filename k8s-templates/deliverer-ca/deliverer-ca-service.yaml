@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rca-deliverer
+  labels:
+    app: rca-deliverer-root
+spec:
+  type: NodePort
+  selector:
+    app: rca-deliverer-root
+  ports:
+    - protocol: TCP
+      nodePort: 30910
+      targetPort: 7057
+      port: 7057

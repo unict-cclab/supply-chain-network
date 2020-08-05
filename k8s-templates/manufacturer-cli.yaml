@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-manufacturer
+  labels:
+    app: cli-manufacturer
+spec:
+  selector:
+    matchLabels:
+      app: cli-manufacturer
+  template:
+    metadata:
+      labels:
+        app: cli-manufacturer
+    spec:
+      containers:
+        - name: cli-manufacturer
+          image: hyperledger/fabric-tools:2.2
+          imagePullPolicy: IfNotPresent
+          tty: true
+          command: ["sh"]
+          workingDir: /tmp/hyperledger/chaincode
+          volumeMounts:
+            - mountPath: /tmp/hyperledger/manufacturer/admin
+              name: manufacturer-admin-mount
+            - mountPath: /tmp/hyperledger/manufacturer/peer1
+              name: manufacturer-peer1-mount
+            - mountPath: /tmp/hyperledger/scripts
+              name: scripts-mount
+            - mountPath: /tmp/hyperledger/chaincode
+              name: chaincode-mount
+          env:
+            - name: GOPATH
+              value: "/opt/gopath"
+            - name: CORE_VM_ENDPOINT
+              value: "unix:///host/var/run/docker.sock"
+            # Uncomment for debugging
+            #- name: FABRIC_LOGGING_SPEC
+            #  value: "DEBUG"
+            - name: CORE_PEER_ID
+              value: "cli-manufacturer"
+            - name: CORE_PEER_ADDRESS
+              value: "peer1-manufacturer:7051"
+            - name: CORE_PEER_LOCALMSPID
+              value: "ManufacturerMSP"
+            - name: CORE_PEER_TLS_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: "/tmp/hyperledger/manufacturer/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: "/tmp/hyperledger/manufacturer/admin/msp"
+            - name: ANCHOR_PEER_IP
+              value: "peer1-manufacturer"
+            - name: ANCHOR_PEER_PORT
+              value: "7051"
+      volumes:
+        - name: manufacturer-peer1-mount
+          hostPath:
+            path: /hyperledger/manufacturer/peer1
+        - name: manufacturer-admin-mount
+          hostPath:
+            path: /hyperledger/manufacturer/admin
+        - name: chaincode-mount
+          hostPath:
+            path: /hyperledger/chaincode
+        - name: scripts-mount
+          hostPath:
+            path: /hyperledger/scripts
+        - name: docker-mount
+          hostPath:
+            path: /var/run/

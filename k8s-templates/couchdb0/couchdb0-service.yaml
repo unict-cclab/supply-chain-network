@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: couchdb0
+  labels:
+    app: couchdb0
+spec:
+  type: ClusterIP
+  selector:
+    app: couchdb0
+  ports:
+    - protocol: TCP
+      targetPort: 5984
+      port: 5984

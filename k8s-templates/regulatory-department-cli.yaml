@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-regulatory-department
+  labels:
+    app: cli-regulatory-department
+spec:
+  selector:
+    matchLabels:
+      app: cli-regulatory-department
+  template:
+    metadata:
+      labels:
+        app: cli-regulatory-department
+    spec:
+      containers:
+        - name: cli-regulatory-department
+          image: hyperledger/fabric-tools:2.2
+          imagePullPolicy: IfNotPresent
+          tty: true
+          command: ["sh"]
+          workingDir: /tmp/hyperledger/chaincode
+          volumeMounts:
+            - mountPath: /tmp/hyperledger/regulatory-department/admin
+              name: regulatory-department-admin-mount
+            - mountPath: /tmp/hyperledger/regulatory-department/peer1
+              name: regulatory-department-peer1-mount
+            - mountPath: /tmp/hyperledger/producer/peer1
+              name: producer-peer1-mount
+            - mountPath: /tmp/hyperledger/manufacturer/peer1
+              name: manufacturer-peer1-mount
+            - mountPath: /tmp/hyperledger/deliverer/peer1
+              name: deliverer-peer1-mount
+            - mountPath: /tmp/hyperledger/retailer/peer1
+              name: retailer-peer1-mount
+            - mountPath: /tmp/hyperledger/scripts
+              name: scripts-mount
+            - mountPath: /tmp/hyperledger/chaincode
+              name: chaincode-mount
+          env:
+            - name: GOPATH
+              value: "/opt/gopath"
+            - name: CORE_VM_ENDPOINT
+              value: "unix:///host/var/run/docker.sock"
+            # Uncomment for debugging
+            #- name: FABRIC_LOGGING_SPEC
+            #  value: "DEBUG"
+            - name: CORE_PEER_ID
+              value: "cli-regulatory-department"
+            - name: CORE_PEER_ADDRESS
+              value: "peer1-regulatory-department:7051"
+            - name: CORE_PEER_LOCALMSPID
+              value: "RegulatoryDepartmentMSP"
+            - name: CORE_PEER_TLS_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: "/tmp/hyperledger/regulatory-department/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: "/tmp/hyperledger/regulatory-department/admin/msp"
+            - name: ANCHOR_PEER_IP
+              value: "peer1-regulatory-department"
+            - name: ANCHOR_PEER_PORT
+              value: "7051"
+      volumes:
+        - name: regulatory-department-peer1-mount
+          hostPath:
+            path: /hyperledger/regulatory-department/peer1
+        - name: producer-peer1-mount
+          hostPath:
+            path: /hyperledger/producer/peer1
+        - name: manufacturer-peer1-mount
+          hostPath:
+            path: /hyperledger/manufacturer/peer1
+        - name: deliverer-peer1-mount
+          hostPath:
+            path: /hyperledger/deliverer/peer1
+        - name: retailer-peer1-mount
+          hostPath:
+            path: /hyperledger/retailer/peer1
+        - name: regulatory-department-admin-mount
+          hostPath:
+            path: /hyperledger/regulatory-department/admin
+        - name: chaincode-mount
+          hostPath:
+            path: /hyperledger/chaincode
+        - name: scripts-mount
+          hostPath:
+            path: /hyperledger/scripts
+        - name: docker-mount
+          hostPath:
+            path: /var/run/

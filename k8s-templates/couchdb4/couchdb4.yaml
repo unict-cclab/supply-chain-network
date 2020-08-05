@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: couchdb4
+    labels:
+        app: couchdb4
+spec:
+    selector:
+        matchLabels:
+            app: couchdb4
+    template:
+        metadata: 
+            labels:
+                app: couchdb4
+        spec:
+            containers:
+              - name: couchdb4
+                image: couchdb:latest
+                imagePullPolicy: IfNotPresent
+                env:
+                - name: COUCHDB_USER
+                  value: "admin"
+                - name: COUCHDB_PASSWORD
+                  value: "adminpw"

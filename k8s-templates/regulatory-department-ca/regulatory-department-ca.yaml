@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: rca-regulatory-department
+    labels:
+        app: rca-regulatory-department-root
+spec:
+    selector:
+        matchLabels:
+            app: rca-regulatory-department-root
+    template:
+        metadata: 
+            labels:
+                app: rca-regulatory-department-root
+        spec:
+            containers:
+              - name: rca-regulatory-department
+                image: hyperledger/fabric-ca:1.4.7
+                imagePullPolicy: IfNotPresent
+                command: ["fabric-ca-server", "start", "-b", "rca-regulatory-department-admin:rca-regulatory-department-adminpw", "--port", "7054"]
+                volumeMounts:
+                  - mountPath: /tmp/hyperledger/fabric-ca
+                    name: ca-mount
+                env:
+                - name: FABRIC_CA_HOME
+                  value: "/tmp/hyperledger/fabric-ca/crypto"
+                - name: FABRIC_CA_SERVER_TLS_ENABLED
+                  value: "true"
+                - name: FABRIC_CA_SERVER_CSR_CN
+                  value: "rca-regulatory-department"
+                - name: FABRIC_CA_SERVER_CSR_HOSTS
+                  value: "${IP}"
+                - name: FABRIC_CA_SERVER_DEBUG
+                  value: "true"
+            volumes:
+              - name: ca-mount
+                hostPath:
+                  path: /hyperledger/regulatory-department/ca
