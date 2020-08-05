@@ -784,6 +784,9 @@ setup-orderer() {
 }
 
 setup-orderer-msp() {
+  #Create shared directory directory
+  mkdir -p $TMP_FOLDER/hyperledger/shared
+
   # Create MSP directory for orderer-org
   export MSP_DIR=$TMP_FOLDER/hyperledger/orderer-org/msp
   mkdir -p $MSP_DIR
@@ -794,6 +797,9 @@ setup-orderer-msp() {
   cp $TMP_FOLDER/hyperledger/orderer-org/admin/msp/signcerts/cert.pem $MSP_DIR/admincerts/admin-orderer-org-cert.pem
   cp $TMP_FOLDER/hyperledger/orderer-org/ca/crypto/ca-cert.pem $MSP_DIR/cacerts/orderer-org-ca-cert.pem
   cp $TMP_FOLDER/ca-cert.pem $MSP_DIR/tlscacerts/tls-ca-cert.pem
+
+  mkdir -p $TMP_FOLDER/hyperledger/shared/orderer-org
+  cp -R $MSP_DIR $TMP_FOLDER/hyperledger/shared/orderer-org
 
   # Create MSP directory for regulatory-department
   export MSP_DIR=$TMP_FOLDER/hyperledger/regulatory-department/msp
@@ -806,6 +812,9 @@ setup-orderer-msp() {
   cp $TMP_FOLDER/hyperledger/regulatory-department/ca/crypto/ca-cert.pem $MSP_DIR/cacerts/regulatory-department-ca-cert.pem
   cp $TMP_FOLDER/ca-cert.pem $MSP_DIR/tlscacerts/tls-ca-cert.pem
 
+  mkdir -p $TMP_FOLDER/hyperledger/shared/regulatory-department
+  cp -R $MSP_DIR $TMP_FOLDER/hyperledger/shared/regulatory-department
+
   # Create MSP directory for producer
   export MSP_DIR=$TMP_FOLDER/hyperledger/producer/msp
   mkdir -p $MSP_DIR
@@ -816,6 +825,9 @@ setup-orderer-msp() {
   cp $TMP_FOLDER/hyperledger/producer/admin/msp/signcerts/cert.pem $MSP_DIR/admincerts/admin-producer-cert.pem
   cp $TMP_FOLDER/hyperledger/producer/ca/crypto/ca-cert.pem $MSP_DIR/cacerts/producer-ca-cert.pem
   cp $TMP_FOLDER/ca-cert.pem $MSP_DIR/tlscacerts/tls-ca-cert.pem
+
+  mkdir -p $TMP_FOLDER/hyperledger/shared/producer
+  cp -R $MSP_DIR $TMP_FOLDER/hyperledger/shared/producer
 
   # Create MSP directory for manufacturer
   export MSP_DIR=$TMP_FOLDER/hyperledger/manufacturer/msp
@@ -828,6 +840,9 @@ setup-orderer-msp() {
   cp $TMP_FOLDER/hyperledger/manufacturer/ca/crypto/ca-cert.pem $MSP_DIR/cacerts/manufacturer-ca-cert.pem
   cp $TMP_FOLDER/ca-cert.pem $MSP_DIR/tlscacerts/tls-ca-cert.pem
 
+  mkdir -p $TMP_FOLDER/hyperledger/shared/manufacturer
+  cp -R $MSP_DIR $TMP_FOLDER/hyperledger/shared/manufacturer
+
   # Create MSP directory for deliverer
   export MSP_DIR=$TMP_FOLDER/hyperledger/deliverer/msp
   mkdir -p $MSP_DIR
@@ -839,6 +854,9 @@ setup-orderer-msp() {
   cp $TMP_FOLDER/hyperledger/deliverer/ca/crypto/ca-cert.pem $MSP_DIR/cacerts/deliverer-ca-cert.pem
   cp $TMP_FOLDER/ca-cert.pem $MSP_DIR/tlscacerts/tls-ca-cert.pem
 
+  mkdir -p $TMP_FOLDER/hyperledger/shared/deliverer
+  cp -R $MSP_DIR $TMP_FOLDER/hyperledger/shared/deliverer
+
   # Create MSP directory for retailer
   export MSP_DIR=$TMP_FOLDER/hyperledger/retailer/msp
   mkdir -p $MSP_DIR
@@ -849,6 +867,9 @@ setup-orderer-msp() {
   cp $TMP_FOLDER/hyperledger/retailer/admin/msp/signcerts/cert.pem $MSP_DIR/admincerts/admin-retailer-cert.pem
   cp $TMP_FOLDER/hyperledger/retailer/ca/crypto/ca-cert.pem $MSP_DIR/cacerts/retailer-ca-cert.pem
   cp $TMP_FOLDER/ca-cert.pem $MSP_DIR/tlscacerts/tls-ca-cert.pem
+
+  mkdir -p $TMP_FOLDER/hyperledger/shared/retailer
+  cp -R $MSP_DIR $TMP_FOLDER/hyperledger/shared/retailer
 }
 
 start-couchdbs() {
@@ -1037,11 +1058,35 @@ create-channel() {
 
   kubectl exec -n supply-chain-network $CLI_RETAILER -- /bin/bash -c "/tmp/hyperledger/scripts/joinChannel.sh retailer"
 
-  #sep
-  #command "Adding anchor peer using CLI_REGULATORY_DEPARTMENT on RegulatoryDepartment Peer1"
-  #sep
+  sep
+  command "Adding anchor peer using CLI_REGULATORY_DEPARTMENT on RegulatoryDepartment Peer1"
+  sep
 
-  #kubectl exec -n supply-chain-network $CLI_REGULATORY_DEPARTMENT -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh regulatory-department"
+  kubectl exec -n supply-chain-network $CLI_REGULATORY_DEPARTMENT -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh regulatory-department"
+
+  sep
+  command "Adding anchor peer using CLI_PRODUCER on Producer Peer1"
+  sep
+
+  kubectl exec -n supply-chain-network $CLI_PRODUCER -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh producer"
+
+  sep
+  command "Adding anchor peer using CLI_MANUFACTURER on Manufacturer Peer1"
+  sep
+
+  kubectl exec -n supply-chain-network $CLI_MANUFACTURER -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh manufacturer"
+
+  sep
+  command "Adding anchor peer using CLI_DELIVERER on Deliverer Peer1"
+  sep
+
+  kubectl exec -n supply-chain-network $CLI_DELIVERER -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh deliverer"
+
+  sep
+  command "Adding anchor peer using CLI_RETAILER on Retailer Peer1"
+  sep
+
+  kubectl exec -n supply-chain-network $CLI_RETAILER -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh retailer"
 }
 
 

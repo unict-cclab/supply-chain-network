@@ -25,18 +25,12 @@ spec:
               name: regulatory-department-admin-mount
             - mountPath: /tmp/hyperledger/regulatory-department/peer1
               name: regulatory-department-peer1-mount
-            - mountPath: /tmp/hyperledger/producer/peer1
-              name: producer-peer1-mount
-            - mountPath: /tmp/hyperledger/manufacturer/peer1
-              name: manufacturer-peer1-mount
-            - mountPath: /tmp/hyperledger/deliverer/peer1
-              name: deliverer-peer1-mount
-            - mountPath: /tmp/hyperledger/retailer/peer1
-              name: retailer-peer1-mount
             - mountPath: /tmp/hyperledger/scripts
               name: scripts-mount
             - mountPath: /tmp/hyperledger/chaincode
               name: chaincode-mount
+            - mountPath: /tmp/hyperledger/shared
+              name: shared-mount
           env:
             - name: GOPATH
               value: "/opt/gopath"
@@ -65,18 +59,6 @@ spec:
         - name: regulatory-department-peer1-mount
           hostPath:
             path: /hyperledger/regulatory-department/peer1
-        - name: producer-peer1-mount
-          hostPath:
-            path: /hyperledger/producer/peer1
-        - name: manufacturer-peer1-mount
-          hostPath:
-            path: /hyperledger/manufacturer/peer1
-        - name: deliverer-peer1-mount
-          hostPath:
-            path: /hyperledger/deliverer/peer1
-        - name: retailer-peer1-mount
-          hostPath:
-            path: /hyperledger/retailer/peer1
         - name: regulatory-department-admin-mount
           hostPath:
             path: /hyperledger/regulatory-department/admin
@@ -86,6 +68,9 @@ spec:
         - name: scripts-mount
           hostPath:
             path: /hyperledger/scripts
+        - name: shared-mount
+          hostPath:
+            path: /hyperledger/shared
         - name: docker-mount
           hostPath:
             path: /var/run/

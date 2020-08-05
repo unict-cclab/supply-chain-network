@@ -30,3 +30,6 @@ kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- 
 
 echo "Commit chaincode"
 kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/commitChaincode.sh "
+
+echo "Invoke chaincode"
+kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/invokeChaincode.sh "
