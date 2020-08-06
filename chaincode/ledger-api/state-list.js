@@ -40,6 +40,13 @@ class StateList {
         return states;
     }
 
+    async getStateHistory(key) {
+        let ledgerKey = this.ctx.stub.createCompositeKey(this.name, State.splitKey(key));
+        let iterator = await this.ctx.stub.getHistoryForKey(ledgerKey);
+        let results = await this.getHistoryFromIterator(iterator);
+        return results;
+    }
+
     async getStatesFromIterator(iterator) {
         let states = [];
         while (true) {
@@ -49,6 +56,25 @@ class StateList {
             if (state.done) {
                 await iterator.close();
                 return states;
+            }
+        }
+    }
+
+    async getHistoryFromIterator(iterator) {
+        let results = [];
+        while (true) {
+            let result = await iterator.next();
+            if (result.value && result.value.value.toString('utf8')){
+                results.push({
+                    'TxId' : result.value.tx_id,
+                    'Timestamp' : result.value.timestamp,
+                    'IsDelete' : result.value.is_delete,
+                    'Value' : State.deserialize(result.value.value, this.supportedClasses)
+                });
+            }
+            if (result.done) {
+                await iterator.close();
+                return results;
             }
         }
     }

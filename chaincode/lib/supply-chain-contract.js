@@ -50,11 +50,11 @@ class SupplyChainContract extends Contract {
     async addRoleSet(ctx, orgId, roles) {
         roles = JSON.parse(roles);
 
-        if(roles.length === 0)
-            throw new Error('Roles array must not be empty');
-
         if((new Set(roles)).size != roles.length)
             throw new Error('There are duplicates in roles array');
+
+        if(roles.length === 0)
+            throw new Error('Roles array must not be empty');
 
         let roleSetKey = RoleSet.makeKey([ctx.clientIdentity.getMSPID()]);
         let roleSet = await ctx.roleSetList.getRoleSet(roleSetKey);
@@ -512,6 +512,18 @@ class SupplyChainContract extends Contract {
         await ctx.batchList.updateBatch(batch);
         return batch;
         
+    }
+
+    async getBatchHistory(ctx, batchId) {
+
+        let batchKey = Batch.makeKey([batchId]);
+        let batch = await ctx.batchList.getBatch(batchKey);
+
+        if(!batch)
+            throw new Error('Batch with id ' +  batchId  + ' does not exist.');
+
+        let results = await ctx.batchList.getBatchHistory(batchKey);
+        return results;
     }
 }
 

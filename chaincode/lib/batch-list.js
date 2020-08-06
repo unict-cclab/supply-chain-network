@@ -30,6 +30,10 @@ class BatchList extends StateList {
         queryString.selector.productName = productName;
         return this.getStatesForQueryString(JSON.stringify(queryString));
     }
+
+    async getBatchHistory(batchKey) {
+        return this.getStateHistory(batchKey);
+    }
 }
 
 
