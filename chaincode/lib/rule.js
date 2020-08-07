@@ -1,16 +1,16 @@
 'use strict';
 
-const State = require('./../ledger-api/state.js');
+const State = require('../ledger-api/state.js');
 
 const states = {
     DISABLED: 1,
     ENABLED: 2,
 };
 
-class RuleSet extends State {
+class Rule extends State {
 
     constructor(obj) {
-        super(RuleSet.getClass(), [obj.id]);
+        super(Rule.getClass(), [obj.id]);
         Object.assign(this, obj);
     }
 
@@ -18,12 +18,24 @@ class RuleSet extends State {
         return this.id;
     }
 
-    getProductTypeId() {
-        return this.productTypeId;
+    getProductTypeName() {
+        return this.productTypeName;
     }
 
-    getValue() {
-        return this.value;
+    getJsonValue() {
+        return this.jsonValue;
+    }
+
+    getIssuerOrgId() {
+        return this.issuerOrgId;
+    }
+
+    getCurrentDisablerOrgId() {
+        return this.currentDisablerOrgId;
+    }
+
+    setCurrentDisablerOrgId(currentDisablerOrgId) {
+        this.currentDisablerOrgId = currentDisablerOrgId;
     }
 
     setDisabled() {
@@ -54,13 +66,13 @@ class RuleSet extends State {
         return State.deserializeClass(data, RuleSet);
     }
 
-    static createInstance(id, productTypeId, value) {
-        return new RuleSet({ id, productTypeId, value});
+    static createInstance(id, productTypeName, jsonValue, issuerOrgId) {
+        return new Rule({ id, productTypeName, jsonValue, issuerOrgId});
     }
 
     static getClass() {
-        return 'org.supplyChain.ruleSet';
+        return 'org.supplyChain.rule';
     }
 }
 
-module.exports = RuleSet;
+module.exports = Rule;

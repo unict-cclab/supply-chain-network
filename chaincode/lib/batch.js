@@ -64,6 +64,10 @@ class Batch extends State {
         return this.batchIngredientIds;
     }
 
+    getParams() {
+        return this.params;
+    }
+
     getBatchIngredients() {
         return this.batchIngredients;
     }
@@ -183,8 +187,8 @@ class Batch extends State {
         return State.deserializeClass(data, Batch);
     }
 
-    static createInstance(id, productName, batchIngredientIds) {
-        return new Batch({ id, productName, batchIngredientIds});
+    static createInstance(id, productName, batchIngredientIds, params) {
+        return new Batch({ id, productName, batchIngredientIds, params});
     }
 
     static getClass() {

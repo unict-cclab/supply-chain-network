@@ -6,12 +6,95 @@ const RoleSet = require('./role-set');
 const RoleSetList = require('./role-set-list');
 const ProductType = require('./product-type');
 const ProductTypeList = require('./product-type-list');
-const RuleSet = require('./rule-set');
-const RuleSetList = require('./rule-set-list');
+const Rule = require('./rule');
+const RuleList = require('./rule-list');
 const Product = require('./product');
 const ProductList = require('./product-list');
 const Batch = require('./batch');
 const BatchList = require('./batch-list');
+const RuleEngine = require('./rule-engine');
+
+async function validateRulesForBatch(ctx, batch){
+
+    let batchIngredients = [];
+
+    for (let batchIngredientId of batch.getBatchIngredientIds()){
+        let batchIngredient = await getBatch(ctx, batchIngredientId);
+        batchIngredients.push(batchIngredient);
+    }
+
+    batch.setBatchIngredients(batchIngredients);
+
+    let product = await getProduct(ctx, batch.getProductName());
+    batch.setProduct(product);
+
+    let rules = await ctx.ruleList.getEnabledRulesByProductTypeName(product.getProductTypeName());
+
+    for (let rule of rules){
+        if(!RuleEngine.verifyJsonRule(rule.getJsonValue(), batch))
+            return false;
+    }
+
+    return true;
+}
+
+async function getProductType(ctx, productTypeName) {
+
+    let productTypeKey = ProductType.makeKey([productTypeName]);
+    let productType = await ctx.productTypeList.getProductType(productTypeKey);
+
+    if(!productType)
+        throw new Error('Product type with name ' +  productTypeName  + ' does not exist.');
+
+    let productTypeIngredients = [];
+
+    for (let productTypeIngredientName of productType.getProductTypeIngredientNames()){
+        let productTypeIngredient = await getProductType(ctx, productTypeIngredientName);
+        productTypeIngredients.push(productTypeIngredient);
+    }
+
+    productType.setProductTypeIngredients(productTypeIngredients);
+
+    return productType;
+}
+
+async function getProduct(ctx, productName) {
+
+    let productKey = Product.makeKey([productName]);
+    let product = await ctx.productList.getProduct(productKey);
+
+    if(!product)
+        throw new Error('Product with name ' +  productName  + ' does not exist.');
+    
+    let productType = await getProductType(ctx, product.getProductTypeName());
+
+    product.setProductType(productType);
+
+    return product;
+}
+
+async function getBatch(ctx, batchId) {
+
+    let batchKey = Batch.makeKey([batchId]);
+    let batch = await ctx.batchList.getBatch(batchKey);
+
+    if(!batch)
+        throw new Error('Batch with id ' +  batchId  + ' does not exist.');
+
+    let batchIngredients = [];
+
+    for (let batchIngredientId of batch.getBatchIngredientIds()){
+        let batchIngredient = await getBatch(ctx, batchIngredientId);
+        batchIngredients.push(batchIngredient);
+    }
+
+    batch.setBatchIngredients(batchIngredients);
+
+    let product = await getProduct(ctx, batch.getProductName());
+    batch.setProduct(product);
+    
+    return batch;
+}
 
 class SupplyChainContext extends Context {
 
@@ -19,7 +102,7 @@ class SupplyChainContext extends Context {
         super();
         this.roleSetList = new RoleSetList(this);
         this.productTypeList = new ProductTypeList(this);
-        this.ruleSetList = new RuleSetList(this);
+        this.ruleList = new RuleList(this);
         this.productList = new ProductList(this);
         this.batchList = new BatchList(this);
     }
@@ -335,10 +418,13 @@ class SupplyChainContract extends Contract {
             
     }
 
-    async registerBatch(ctx, productName, batchIngredientIds) {
+    async registerBatch(ctx, productName, batchIngredientIds, params) {
+
         batchIngredientIds = JSON.parse(batchIngredientIds);
         if((new Set(batchIngredientIds)).size != batchIngredientIds.length)
             throw new Error('There are duplicates in productTypeIngredientNames array');
+
+        params = JSON.parse(params);
 
         let productKey = Product.makeKey([productName]);
         let product = await ctx.productList.getProduct(productKey);
@@ -395,9 +481,14 @@ class SupplyChainContract extends Contract {
                 throw new Error('Not all ingredients necessary to build this batch have been specified.');
         }
 
-        let batch = Batch.createInstance(productName.concat(':', ctx.stub.getTxID()), productName, batchIngredientIds);
+        let batch = Batch.createInstance(productName.concat(':', ctx.stub.getTxID()), productName, batchIngredientIds, params);
         batch.setUnblocked();
         batch.setCurrentOwnerOrgId(ctx.clientIdentity.getMSPID());
+
+        let result = await validateRulesForBatch(ctx, new Batch(batch));
+        if(!result)
+            throw new Error('Not all rules for this batch have been satisfied.');
+
         await ctx.batchList.addBatch(batch);
         return batch;
     }
@@ -525,64 +616,86 @@ class SupplyChainContract extends Contract {
         let results = await ctx.batchList.getBatchHistory(batchKey);
         return results;
     }
+    
+    async addRule(ctx, productTypeName, ruleString) {
 
-    async getProductType(ctx, productTypeName) {
+        let roleSetKey = RoleSet.makeKey([ctx.clientIdentity.getMSPID()]);
+        let roleSet = await ctx.roleSetList.getRoleSet(roleSetKey);
 
-        let productTypeKey = ProductType.makeKey([productTypeName]);
-        let productType = await ctx.productTypeList.getProductType(productTypeKey);
+        if(roleSet && roleSet.roles.includes('admin')) {
+            let productTypeKey = ProductType.makeKey([productTypeName]);
+            let productType = await ctx.productTypeList.getProductType(productTypeKey);
 
-        if(!productType)
-            throw new Error('Product type with name ' +  productTypeName  + ' does not exist.');
+            if(!productType)
+                throw new Error('Product type with name ' +  productTypeName  + ' does not exist.');
+            
+            let jsonRule = RuleEngine.getJsonRuleFromRuleString(ruleString);
 
-        let productTypeIngredients = [];
-
-        for (let productTypeIngredientName of productType.getProductTypeIngredientNames()){
-            let productTypeIngredient = await this['getProductType'](ctx, productTypeIngredientName);
-            productTypeIngredients.push(productTypeIngredient);
+            if(!jsonRule)
+                throw new Error('Error in parsing rule');
+            
+            let rule = Rule.createInstance(productTypeName.concat(':', ctx.stub.getTxID()), productTypeName, jsonRule, ctx.clientIdentity.getMSPID());
+            rule.setDisabled();
+            rule.setCurrentDisablerOrgId(ctx.clientIdentity.getMSPID());
+            await ctx.ruleList.addRule(rule);
+            return rule;
+            
         }
-    
-        productType.setProductTypeIngredients(productTypeIngredients);
-    
-        return productType;
-    }
-
-    
-    async getProduct(ctx, productName) {
-
-        let productKey = Product.makeKey([productName]);
-        let product = await ctx.productList.getProduct(productKey);
-
-        if(!product)
-            throw new Error('Product with name ' +  productName  + ' does not exist.');
-        
-        let productType = await this['getProductType'](ctx, product.getProductTypeName());
-
-        product.setProductType(productType);
-
-        return product;
-    }
-    
-    async getBatch(ctx, batchId) {
-
-        let batchKey = Batch.makeKey([batchId]);
-        let batch = await ctx.batchList.getBatch(batchKey);
-
-        if(!batch)
-            throw new Error('Batch with id ' +  batchId  + ' does not exist.');
-
-        let batchIngredients = [];
-
-        for (let batchIngredientId of batch.getBatchIngredientIds()){
-            let batchIngredient = await this['getBatch'](ctx, batchIngredientId);
-            batchIngredients.push(batchIngredient);
+        else {
+            throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
         }
 
-        batch.setBatchIngredients(batchIngredients);
+    }
 
-        let product = await this['getProduct'](ctx, batch.getProductName());
-        batch.setProduct(product);
-        
-        return batch;
+    async enableRule(ctx, ruleId) {
+
+        let roleSetKey = RoleSet.makeKey([ctx.clientIdentity.getMSPID()]);
+        let roleSet = await ctx.roleSetList.getRoleSet(roleSetKey);
+
+        if(roleSet && roleSet.roles.includes('admin')) {
+            let ruleKey = Rule.makeKey([ruleId]);
+            let rule = await ctx.ruleList.getRule(ruleKey);
+
+            if(!rule)
+                throw new Error('Rule with id ' +  ruleId  + ' does not exist.');
+            
+            if(rule.isEnabled()) 
+                throw new Error('Rule with id ' +  ruleId  + ' is just enabled.');
+
+            rule.setEnabled();
+            rule.setCurrentDisablerOrgId(null);
+            await ctx.ruleList.updateRule(rule);
+            return rule;
+        }
+        else {
+            throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
+        }
+
+    }
+
+    async disableRule(ctx, ruleId) {
+
+        let roleSetKey = RoleSet.makeKey([ctx.clientIdentity.getMSPID()]);
+        let roleSet = await ctx.roleSetList.getRoleSet(roleSetKey);
+
+        if(roleSet && roleSet.roles.includes('admin')) {
+            let ruleKey = Rule.makeKey([ruleId]);
+            let rule = await ctx.ruleList.getRule(ruleKey);
+
+            if(!rule)
+                throw new Error('Rule with id ' +  ruleId  + ' does not exist.');
+            
+            if(rule.isDisabled()) 
+                throw new Error('Rule with id ' +  ruleId  + ' is just disabled.');
+
+            rule.setDisabled();
+            rule.setCurrentDisablerOrgId(ctx.clientIdentity.getMSPID());
+            await ctx.ruleList.updateRule(rule);
+            return rule;
+        }
+        else {
+            throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
+        }
     }
 }
 
