@@ -28,6 +28,14 @@ class Batch extends State {
         return this.productName;
     }
 
+    getProduct() {
+        return this.product;
+    }
+
+    setProduct(product) {
+        this.product = product; 
+    }
+
     setCurrentOwnerOrgId(currentOwnerOrgId) {
         this.currentOwnerOrgId = currentOwnerOrgId;
     }
@@ -54,6 +62,14 @@ class Batch extends State {
 
     getBatchIngredientIds() {
         return this.batchIngredientIds;
+    }
+
+    getBatchIngredients() {
+        return this.batchIngredients;
+    }
+
+    setBatchIngredients(batchIngredients) {
+        this.batchIngredients = batchIngredients;
     }
 
     setOutputBatchId(outputBatchId) {

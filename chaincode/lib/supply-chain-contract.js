@@ -54,7 +54,7 @@ class SupplyChainContract extends Contract {
             throw new Error('There are duplicates in roles array');
 
         if(roles.length === 0)
-            throw new Error('Roles array must not be empty');
+            throw new Error('Roles array cannot be empty');
 
         let roleSetKey = RoleSet.makeKey([ctx.clientIdentity.getMSPID()]);
         let roleSet = await ctx.roleSetList.getRoleSet(roleSetKey);
@@ -524,6 +524,65 @@ class SupplyChainContract extends Contract {
 
         let results = await ctx.batchList.getBatchHistory(batchKey);
         return results;
+    }
+
+    async getProductType(ctx, productTypeName) {
+
+        let productTypeKey = ProductType.makeKey([productTypeName]);
+        let productType = await ctx.productTypeList.getProductType(productTypeKey);
+
+        if(!productType)
+            throw new Error('Product type with name ' +  productTypeName  + ' does not exist.');
+
+        let productTypeIngredients = [];
+
+        for (let productTypeIngredientName of productType.getProductTypeIngredientNames()){
+            let productTypeIngredient = await this['getProductType'](ctx, productTypeIngredientName);
+            productTypeIngredients.push(productTypeIngredient);
+        }
+    
+        productType.setProductTypeIngredients(productTypeIngredients);
+    
+        return productType;
+    }
+
+    
+    async getProduct(ctx, productName) {
+
+        let productKey = Product.makeKey([productName]);
+        let product = await ctx.productList.getProduct(productKey);
+
+        if(!product)
+            throw new Error('Product with name ' +  productName  + ' does not exist.');
+        
+        let productType = await this['getProductType'](ctx, product.getProductTypeName());
+
+        product.setProductType(productType);
+
+        return product;
+    }
+    
+    async getBatch(ctx, batchId) {
+
+        let batchKey = Batch.makeKey([batchId]);
+        let batch = await ctx.batchList.getBatch(batchKey);
+
+        if(!batch)
+            throw new Error('Batch with id ' +  batchId  + ' does not exist.');
+
+        let batchIngredients = [];
+
+        for (let batchIngredientId of batch.getBatchIngredientIds()){
+            let batchIngredient = await this['getBatch'](ctx, batchIngredientId);
+            batchIngredients.push(batchIngredient);
+        }
+
+        batch.setBatchIngredients(batchIngredients);
+
+        let product = await this['getProduct'](ctx, batch.getProductName());
+        batch.setProduct(product);
+        
+        return batch;
     }
 }
 

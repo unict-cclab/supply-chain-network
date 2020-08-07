@@ -26,6 +26,14 @@ class Product extends State {
         return this.productTypeName;
     }
 
+    getProductType() {
+        return this.productType;
+    }
+
+    setProductType(productType) {
+        this.productType = productType;
+    }
+
     getIssuerOrgId() {
         return this.issuerOrgId;
     }

@@ -30,6 +30,14 @@ class ProductType extends State {
         return this.productTypeIngredientNames;
     }
 
+    getProductTypeIngredients() {
+        return this.productTypeIngredients;
+    }
+
+    setProductTypeIngredients(productTypeIngredients) {
+        this.productTypeIngredients = productTypeIngredients;
+    }
+
     getIssuerOrgId() {
         return this.issuerOrgId;
     }
