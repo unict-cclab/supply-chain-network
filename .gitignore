@@ -1,2 +1,3 @@
 configtxgen
 fabric-ca-client
+node_modules/
