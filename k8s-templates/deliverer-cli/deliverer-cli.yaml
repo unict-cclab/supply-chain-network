@@ -15,10 +15,11 @@ spec:
     spec:
       containers:
         - name: cli-deliverer
-          image: hyperledger/fabric-tools:2.2
+          image: cli
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
           tty: true
-          command: ["sh"]
           workingDir: /tmp/hyperledger/chaincode
           volumeMounts:
             - mountPath: /tmp/hyperledger/deliverer/admin
@@ -31,6 +32,8 @@ spec:
               name: chaincode-mount
             - mountPath: /tmp/hyperledger/shared
               name: shared-mount
+            - mountPath: /tmp/hyperledger/app
+              name: app-mount
           env:
             - name: GOPATH
               value: "/opt/gopath"
@@ -74,3 +77,6 @@ spec:
         - name: docker-mount
           hostPath:
             path: /var/run/
+        - name: app-mount
+          hostPath:
+            path: /hyperledger/app/deliverer-cli

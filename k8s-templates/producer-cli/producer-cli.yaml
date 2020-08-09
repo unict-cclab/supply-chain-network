@@ -1,36 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cli-manufacturer
+  name: cli-producer
   labels:
-    app: cli-manufacturer
+    app: cli-producer
 spec:
   selector:
     matchLabels:
-      app: cli-manufacturer
+      app: cli-producer
   template:
     metadata:
       labels:
-        app: cli-manufacturer
+        app: cli-producer
     spec:
       containers:
-        - name: cli-manufacturer
-          image: hyperledger/fabric-tools:2.2
+        - name: cli-producer
+          image: cli
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
           tty: true
-          command: ["sh"]
           workingDir: /tmp/hyperledger/chaincode
           volumeMounts:
-            - mountPath: /tmp/hyperledger/manufacturer/admin
-              name: manufacturer-admin-mount
-            - mountPath: /tmp/hyperledger/manufacturer/peer1
-              name: manufacturer-peer1-mount
+            - mountPath: /tmp/hyperledger/producer/admin
+              name: producer-admin-mount
+            - mountPath: /tmp/hyperledger/producer/peer1
+              name: producer-peer1-mount
             - mountPath: /tmp/hyperledger/scripts
               name: scripts-mount
             - mountPath: /tmp/hyperledger/chaincode
               name: chaincode-mount
             - mountPath: /tmp/hyperledger/shared
               name: shared-mount
+            - mountPath: /tmp/hyperledger/app
+              name: app-mount
           env:
             - name: GOPATH
               value: "/opt/gopath"
@@ -40,28 +43,28 @@ spec:
             #- name: FABRIC_LOGGING_SPEC
             #  value: "DEBUG"
             - name: CORE_PEER_ID
-              value: "cli-manufacturer"
+              value: "cli-producer"
             - name: CORE_PEER_ADDRESS
-              value: "peer1-manufacturer:7051"
+              value: "peer1-producer:7051"
             - name: CORE_PEER_LOCALMSPID
-              value: "ManufacturerMSP"
+              value: "ProducerMSP"
             - name: CORE_PEER_TLS_ENABLED
               value: "true"
             - name: CORE_PEER_TLS_ROOTCERT_FILE
-              value: "/tmp/hyperledger/manufacturer/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
+              value: "/tmp/hyperledger/producer/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
             - name: CORE_PEER_MSPCONFIGPATH
-              value: "/tmp/hyperledger/manufacturer/admin/msp"
+              value: "/tmp/hyperledger/producer/admin/msp"
             - name: ANCHOR_PEER_IP
-              value: "peer1-manufacturer"
+              value: "peer1-producer"
             - name: ANCHOR_PEER_PORT
               value: "7051"
       volumes:
-        - name: manufacturer-peer1-mount
+        - name: producer-peer1-mount
           hostPath:
-            path: /hyperledger/manufacturer/peer1
-        - name: manufacturer-admin-mount
+            path: /hyperledger/producer/peer1
+        - name: producer-admin-mount
           hostPath:
-            path: /hyperledger/manufacturer/admin
+            path: /hyperledger/producer/admin
         - name: chaincode-mount
           hostPath:
             path: /hyperledger/chaincode
@@ -74,3 +77,6 @@ spec:
         - name: docker-mount
           hostPath:
             path: /var/run/
+        - name: app-mount
+          hostPath:
+            path: /hyperledger/app/producer-cli

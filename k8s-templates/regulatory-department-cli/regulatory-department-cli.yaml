@@ -1,36 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cli-retailer
+  name: cli-regulatory-department
   labels:
-    app: cli-retailer
+    app: cli-regulatory-department
 spec:
   selector:
     matchLabels:
-      app: cli-retailer
+      app: cli-regulatory-department
   template:
     metadata:
       labels:
-        app: cli-retailer
+        app: cli-regulatory-department
     spec:
       containers:
-        - name: cli-org1
-          image: hyperledger/fabric-tools:2.2
+        - name: cli-regulatory-department
+          image: cli
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
           tty: true
-          command: ["sh"]
           workingDir: /tmp/hyperledger/chaincode
           volumeMounts:
-            - mountPath: /tmp/hyperledger/retailer/admin
-              name: retailer-admin-mount
-            - mountPath: /tmp/hyperledger/retailer/peer1
-              name: retailer-peer1-mount
+            - mountPath: /tmp/hyperledger/regulatory-department/admin
+              name: regulatory-department-admin-mount
+            - mountPath: /tmp/hyperledger/regulatory-department/peer1
+              name: regulatory-department-peer1-mount
             - mountPath: /tmp/hyperledger/scripts
               name: scripts-mount
             - mountPath: /tmp/hyperledger/chaincode
               name: chaincode-mount
             - mountPath: /tmp/hyperledger/shared
               name: shared-mount
+            - mountPath: /tmp/hyperledger/app
+              name: app-mount
           env:
             - name: GOPATH
               value: "/opt/gopath"
@@ -40,28 +43,28 @@ spec:
             #- name: FABRIC_LOGGING_SPEC
             #  value: "DEBUG"
             - name: CORE_PEER_ID
-              value: "cli-retailer"
+              value: "cli-regulatory-department"
             - name: CORE_PEER_ADDRESS
-              value: "peer1-retailer:7051"
+              value: "peer1-regulatory-department:7051"
             - name: CORE_PEER_LOCALMSPID
-              value: "RetailerMSP"
+              value: "RegulatoryDepartmentMSP"
             - name: CORE_PEER_TLS_ENABLED
               value: "true"
             - name: CORE_PEER_TLS_ROOTCERT_FILE
-              value: "/tmp/hyperledger/retailer/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
+              value: "/tmp/hyperledger/regulatory-department/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
             - name: CORE_PEER_MSPCONFIGPATH
-              value: "/tmp/hyperledger/retailer/admin/msp"
+              value: "/tmp/hyperledger/regulatory-department/admin/msp"
             - name: ANCHOR_PEER_IP
-              value: "peer1-retailer"
+              value: "peer1-regulatory-department"
             - name: ANCHOR_PEER_PORT
               value: "7051"
       volumes:
-        - name: retailer-peer1-mount
+        - name: regulatory-department-peer1-mount
           hostPath:
-            path: /hyperledger/retailer/peer1
-        - name: retailer-admin-mount
+            path: /hyperledger/regulatory-department/peer1
+        - name: regulatory-department-admin-mount
           hostPath:
-            path: /hyperledger/retailer/admin
+            path: /hyperledger/regulatory-department/admin
         - name: chaincode-mount
           hostPath:
             path: /hyperledger/chaincode
@@ -74,3 +77,6 @@ spec:
         - name: docker-mount
           hostPath:
             path: /var/run/
+        - name: app-mount
+          hostPath:
+            path: /hyperledger/app/regulatory-department-cli
