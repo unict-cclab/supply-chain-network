@@ -916,11 +916,23 @@ start-couchdbs() {
 }
 
 start-clis() {
+  
+  mkdir -p $TMP_FOLDER/hyperledger/app
+  cp -a app/. $TMP_FOLDER/hyperledger/app
+
+  sep
+  command "Building cli image"
+  sep
+
+  eval $(minikube docker-env)
+  docker build -t cli ./dockerfiles/cli
+
   sep
   command "Starting RegulatoryDepartment CLI"
   sep
 
-  kubectl create -f "$K8S/regulatory-department-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/regulatory-department-cli/regulatory-department-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/regulatory-department-cli/regulatory-department-cli-service.yaml" -n supply-chain-network
 
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/regulatory-department/admin/msp/admincerts/
@@ -933,7 +945,8 @@ start-clis() {
   command "Starting Producer CLI"
   sep
 
-  kubectl create -f "$K8S/producer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/producer-cli/producer-cli-service.yaml" -n supply-chain-network
 
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/producer/admin/msp/admincerts/
@@ -943,7 +956,8 @@ start-clis() {
   command "Starting Manufacturer CLI"
   sep
 
-  kubectl create -f "$K8S/manufacturer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/manufacturer-cli/manufacturer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/manufacturer-cli/manufacturer-cli-service.yaml" -n supply-chain-network
 
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/manufacturer/admin/msp/admincerts/
@@ -953,7 +967,8 @@ start-clis() {
   command "Starting Deliverer CLI"
   sep
 
-  kubectl create -f "$K8S/deliverer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/deliverer-cli/deliverer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/deliverer-cli/deliverer-cli-service.yaml" -n supply-chain-network
 
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/deliverer/admin/msp/admincerts/
@@ -963,7 +978,8 @@ start-clis() {
   command "Starting Retailer CLI"
   sep
 
-  kubectl create -f "$K8S/retailer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/retailer-cli/retailer-cli.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/retailer-cli/retailer-cli-service.yaml" -n supply-chain-network
 
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/retailer/admin/msp/admincerts/
@@ -1089,6 +1105,10 @@ create-channel() {
   kubectl exec -n supply-chain-network $CLI_RETAILER -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh retailer"
 }
 
+start-ingress() {
+  kubectl create -f "$K8S/ingress/ingress.yaml" -n supply-chain-network
+}
+
 
 # Debug commands using -d flag
 export DEBUG=""
@@ -1143,12 +1163,14 @@ start-deliverer-peer1
 start-retailer-peer1
 
 setup-orderer
-start-clis
 setup-dind
+start-clis
 
 sleep 5
 
 create-channel
+
+start-ingress
 
 sep
 

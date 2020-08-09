@@ -6,8 +6,7 @@ get_pods() {
 # Exit on errors
 set -e
 
-export CC_PACKAGE_ID=supplyChain_1:10c03a5e09e964d1ea60dc30f3411faa696558a6b4befd7d96a4d9ae80ec825d
-
+export CC_PACKAGE_ID=supplyChain_1:8bd1d60a28da7511f55130a30984cba4c3f671479dea94d26bfd71e48d544ba4
 # Use CLI shell to create channel
 
 echo "Approve chaincode on RegulatoryDepartment"
@@ -29,7 +28,7 @@ echo "Check Commit Readiness for channel chaincode"
 kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/checkCommitReadiness.sh"
 
 echo "Commit chaincode"
-kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/commitChaincode.sh "
+kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/commitChaincode.sh"
 
 echo "Invoke chaincode"
-kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/invokeChaincode.sh "
+kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/invokeChaincode.sh"

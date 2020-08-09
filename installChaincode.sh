@@ -11,12 +11,6 @@ source ./env.sh
 echo "Copy chaincode"
 cp -a chaincode/. $TMP_FOLDER/hyperledger/chaincode
 
-echo "Install chaincode dependencies using npm"
-cd $TMP_FOLDER/hyperledger/chaincode
-npm install
-
-cd ../../../
-
 echo "Package chaincode on CLI_REGULATORY_DEPARTMENT"
 kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/packageChaincode.sh"
 
