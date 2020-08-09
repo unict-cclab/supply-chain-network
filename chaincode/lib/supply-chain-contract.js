@@ -120,6 +120,7 @@ class SupplyChainContract extends Contract {
     }
 
     async init(ctx) {
+        
         console.log('Chaincode initialized');
         let roleSetKey = RoleSet.makeKey(['RegulatoryDepartmentMSP']);
         let roleSet = await ctx.roleSetList.getRoleSet(roleSetKey);
@@ -131,6 +132,7 @@ class SupplyChainContract extends Contract {
     }
 
     async addRoleSet(ctx, orgId, roles) {
+
         roles = JSON.parse(roles);
 
         if((new Set(roles)).size != roles.length)
@@ -159,6 +161,7 @@ class SupplyChainContract extends Contract {
     }
 
     async addProductType(ctx, productTypeName, type, productTypeIngredientNames) {
+
         productTypeIngredientNames = JSON.parse(productTypeIngredientNames);
         if((new Set(productTypeIngredientNames)).size != productTypeIngredientNames.length)
             throw new Error('There are duplicates in productTypeIngredientNames array');

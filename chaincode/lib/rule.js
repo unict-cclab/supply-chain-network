@@ -75,4 +75,5 @@ class Rule extends State {
     }
 }
 
-module.exports = Rule;
+module.exports.Rule = Rule;
+module.exports.ruleStates = states;

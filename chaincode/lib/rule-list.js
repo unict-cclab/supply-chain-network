@@ -2,7 +2,7 @@
 
 const StateList = require('../ledger-api/state-list');
 
-const Rule = require('./rule');
+const {Rule, ruleStates} = require('./rule');
 
 class RuleList extends StateList {
 
@@ -28,6 +28,7 @@ class RuleList extends StateList {
         queryString.selector = {};
         queryString.selector.class = Rule.getClass();
         queryString.selector.productTypeName = productTypeName;
+        queryString.selector.currentState = ruleStates.ENABLED;
         return this.getStatesForQueryString(JSON.stringify(queryString));
     }
 }
