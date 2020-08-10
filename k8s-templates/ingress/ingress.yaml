@@ -12,28 +12,29 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
 spec:
   rules:
   - host: supply-chain-network.local
     http:
       paths:
-      - path: /cli-regulatory-department
+      - path: /cli-regulatory-department(/|$)(.*)
         backend:
           serviceName: cli-regulatory-department
           servicePort: 3000
-      - path: /cli-producer
+      - path: /cli-producer(/|$)(.*)
         backend:
           serviceName: cli-producer
           servicePort: 3000
-      - path: /cli-manufacturer
+      - path: /cli-manufacturer(/|$)(.*)
         backend:
           serviceName: cli-manufacturer
           servicePort: 3000
-      - path: /cli-deliverer
+      - path: /cli-deliverer(/|$)(.*)
         backend:
           serviceName: cli-deliverer
           servicePort: 3000
-      - path: /cli-retailer
+      - path: /cli-retailer(/|$)(.*)
         backend:
           serviceName: cli-retailer
           servicePort: 3000

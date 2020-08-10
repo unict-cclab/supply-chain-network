@@ -1,3 +1,86 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-deliverer-db
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: cli-deliverer-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-deliverer-db
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: cli-deliverer-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-deliverer
+  labels:
+    app: cli-deliverer
+spec:
+  type: ClusterIP
+  selector:
+    app: cli-deliverer
+  ports:
+    - protocol: TCP
+      targetPort: 3000
+      port: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-deliverer-db
+spec:
+  selector:
+    matchLabels:
+      app: cli-deliverer-db
+  template:
+    metadata:
+      labels:
+        app: cli-deliverer-db
+    spec:
+      containers:
+      - name: cli-deliverer-db
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        envFrom:
+        - configMapRef:
+            name: deliverer-cli-db-env-file
+        - secretRef:
+            name: deliverer-cli-db-secret-file
+        volumeMounts:
+            - mountPath: /data/db
+              name: cli-deliverer-db-volume
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 20
+          timeoutSeconds: 1
+      volumes:
+      - name: cli-deliverer-db-volume
+        hostPath:
+            path: /cli-deliverer-db-volume
+            type: DirectoryOrCreate
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,6 +117,18 @@ spec:
               name: shared-mount
             - mountPath: /tmp/hyperledger/app
               name: app-mount
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 3
           env:
             - name: GOPATH
               value: "/opt/gopath"
@@ -58,6 +153,16 @@ spec:
               value: "peer1-deliverer"
             - name: ANCHOR_PEER_PORT
               value: "7051"
+            - name: DB_USERNAME
+              value: "root"
+            - name: DB_PASSWORD
+              value: "toor"
+            - name: DB_HOST
+              value: "cli-deliverer-db"
+            - name: DB_PORT
+              value: "27017"
+            - name: DB_NAME
+              value: "admin"
       volumes:
         - name: deliverer-peer1-mount
           hostPath:
