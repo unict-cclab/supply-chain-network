@@ -2,21 +2,21 @@
 
 const crypto = require('crypto');
 const FabricCAServices = require('fabric-ca-client');
-const { Wallets } = require('fabric-network');
+const { Gateway, Wallets } = require('fabric-network');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 const User = require('./models/user');
 
-function addAdminUserToDb(username, password) {
+function addUserToDb(username, password, role) {
 
-  const adminUser = new User();
-  adminUser.username = username;
-  adminUser.password = new Buffer(
+  const user = new User();
+  user.username = username;
+  user.password = new Buffer(
       crypto.createHash('sha256').update(password, 'utf8').digest()
     ).toString('base64');
-  adminUser.type = "admin"; 
-  adminUser.save(function(err){
+  user.role = role; 
+  user.save(function(err){
     if(err)
       if (err.code === 11000)
         console.log('This username is already taken');
@@ -24,7 +24,7 @@ function addAdminUserToDb(username, password) {
 
 };
 
-async function enrollAdminUser(username, password) {
+async function enrollUser(username, password) {
 
   try {
     // load the network configuration
@@ -66,7 +66,7 @@ async function enrollAdminUser(username, password) {
 
 }
 
-async function registerAndEnrollUser(username, password) {
+async function registerAndEnrollUser(username) {
 
   try {
     // load the network configuration
@@ -90,28 +90,28 @@ async function registerAndEnrollUser(username, password) {
     }
 
     // Create a new file system based wallet for managing admin identity.
-    const adminWalletPath = path.resolve(__dirname, 'identity/user/'+ process.env.ADMIN_USERNAME +'/wallet');
-    const adminWallet = await Wallets.newFileSystemWallet(adminWalletPath);
+    const rcaAdminWalletPath = path.resolve(__dirname, 'identity/user/'+ process.env.RCA_ADMIN_USERNAME +'/wallet');
+    const rcaAdminWallet = await Wallets.newFileSystemWallet(rcaAdminWalletPath);
 
     // Check to see if we've already enrolled the admin user.
-    const adminIdentity = await adminWallet.get(process.env.ADMIN_USERNAME);
-    if (!adminIdentity) {
-        console.log('An identity for the admin user ' + process.env.ADMIN_USERNAME + ' does not exist in the wallet');
+    const rcaAdminIdentity = await rcaAdminWallet.get(process.env.RCA_ADMIN_USERNAME);
+    if (!rcaAdminIdentity) {
+        console.log('An identity for the admin user ' + process.env.RCA_ADMIN_USERNAME + ' does not exist in the wallet');
         return;
     }
 
     // build a user object for authenticating with the CA
-    const provider = adminWallet.getProviderRegistry().getProvider(adminIdentity.type);
-    const adminUser = await provider.getUserContext(adminIdentity, process.env.ADMIN_USERNAME);
+    const provider = rcaAdminWallet.getProviderRegistry().getProvider(rcaAdminIdentity.type);
+    const rcaAdminUser = await provider.getUserContext(rcaAdminIdentity, process.env.RCA_ADMIN_USERNAME);
 
     // Register the user, enroll the user, and import the new identity into the wallet.
     const secret = await ca.register({
         enrollmentID: username,
         role: 'user'
-    }, adminUser);
+    }, rcaAdminUser);
     const enrollment = await ca.enroll({
         enrollmentID: username,
-        enrollmentSecret: password
+        enrollmentSecret: secret
     });
     const x509Identity = {
         credentials: {
@@ -124,12 +124,49 @@ async function registerAndEnrollUser(username, password) {
     await userWallet.put(username, x509Identity);
     console.log('Successfully registered and enrolled user ' + username + 'and imported it into the wallet');
 
-} catch (error) {
+  } catch (error) {
     console.error(`Failed to register user ${username}: ${error}`);
+  }
 }
 
+async function submitTransaction(username, args) {
+
+  // load the network configuration
+  const ccpPath = path.resolve(__dirname, 'connection-profile.yaml');
+  const ccp = yaml.safeLoad(fs.readFileSync(ccpPath, 'utf8'));
+
+  // Create a new file system based wallet for managing identities.
+  const walletPath = path.resolve(__dirname, 'identity/user/' + username + '/wallet');
+  const wallet = await Wallets.newFileSystemWallet(walletPath);
+  
+  // Check to see if we've already enrolled the user.
+  const identity = await wallet.get(username);
+  if (!identity) {
+      throw new Error('An identity for the user ' + username + ' does not exist in the wallet');
+  }
+  
+  // Create a new gateway for connecting to our peer node.
+  const gateway = new Gateway();
+  
+  await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: false }, clientTlsIdentity: username});
+  // Get the network (channel) our contract is deployed to.
+  
+  const network = await gateway.getNetwork('mychannel');
+  
+  // Get the contract from the network.
+  const contract = network.getContract('supplyChain');
+  
+  const result = await contract.submitTransaction(...args);
+  
+  console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+
+  // Disconnect from the gateway.
+  await gateway.disconnect();
+
+  return result.toString();
 }
 
-module.exports.addAdminUserToDb = addAdminUserToDb;
-module.exports.enrollAdminUser = enrollAdminUser;
+module.exports.addUserToDb = addUserToDb;
+module.exports.enrollUser = enrollUser;
 module.exports.registerAndEnrollUser = registerAndEnrollUser;
+module.exports.submitTransaction = submitTransaction;

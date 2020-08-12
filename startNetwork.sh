@@ -940,7 +940,7 @@ start-clis() {
   docker build -t cli ./dockerfiles/cli
 
   sep
-  command "Starting RegulatoryDepartment CLI"
+  command "Starting RegulatoryDepartment CLI DB"
   sep
 
   kubectl create configmap regulatory-department-cli-db-env-file --from-env-file=$K8S/regulatory-department-cli/regulatory-department-cli-db-env-file.properties -n supply-chain-network --save-config
@@ -960,7 +960,7 @@ start-clis() {
   cp $TMP_FOLDER/hyperledger/orderer-org/orderer/channel.tx $TMP_FOLDER/hyperledger/regulatory-department/peer1/assets/
 
   sep
-  command "Starting Producer CLI"
+  command "Starting Producer CLI DB"
   sep
 
   kubectl create configmap producer-cli-db-env-file --from-env-file=$K8S/producer-cli/producer-cli-db-env-file.properties --save-config -n supply-chain-network
@@ -977,7 +977,7 @@ start-clis() {
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/producer/msp/admincerts/admin-producer-cert.pem "$d"
 
   sep
-  command "Starting Manufacturer CLI"
+  command "Starting Manufacturer CLI DB"
   sep
 
   kubectl create configmap manufacturer-cli-db-env-file --from-env-file=$K8S/manufacturer-cli/manufacturer-cli-db-env-file.properties --save-config -n supply-chain-network
@@ -994,7 +994,7 @@ start-clis() {
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/manufacturer/msp/admincerts/admin-manufacturer-cert.pem "$d"
 
   sep
-  command "Starting Deliverer CLI"
+  command "Starting Deliverer CLI DB"
   sep
 
   kubectl create configmap deliverer-cli-db-env-file --from-env-file=$K8S/deliverer-cli/deliverer-cli-db-env-file.properties --save-config -n supply-chain-network
@@ -1011,7 +1011,7 @@ start-clis() {
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/deliverer/msp/admincerts/admin-deliverer-cert.pem "$d"
 
   sep
-  command "Starting Retailer CLI"
+  command "Starting Retailer CLI DB"
   sep
 
   kubectl create configmap retailer-cli-db-env-file --from-env-file=$K8S/retailer-cli/retailer-cli-db-env-file.properties --save-config -n supply-chain-network
@@ -1034,6 +1034,10 @@ start-clis() {
   kubectl wait --for=condition=ready pod -l app=cli-retailer-db --timeout=240s -n supply-chain-network
   
   sleep 20
+
+  sep
+  command "Starting CLIS"
+  sep
 
   kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli.yaml" -n supply-chain-network
   kubectl apply -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
@@ -1164,6 +1168,7 @@ create-channel() {
 
 start-ingress() {
   kubectl create -f "$K8S/ingress/ingress.yaml" -n supply-chain-network
+  minikube addons enable ingress
 }
 
 
@@ -1180,7 +1185,7 @@ source ./env.sh
 # Start minikube
 if minikube status | grep -q 'host: Stopped'; then
   command "Starting Network"
-  minikube start
+  minikube start --memory 4096
 fi
 
 # Use configuration file to generate kubernetes setup from the template

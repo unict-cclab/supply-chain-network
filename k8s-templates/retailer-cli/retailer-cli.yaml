@@ -95,6 +95,10 @@ spec:
               value: "27017"
             - name: DB_NAME
               value: "admin"
+            - name: RCA_ADMIN_USERNAME
+              value: "rca-retailer-admin"
+            - name: RCA_ADMIN_PASSWORD
+              value: "rca-retailer-adminpw"
             - name: ADMIN_USERNAME
               value: "admin-retailer"
             - name: ADMIN_PASSWORD

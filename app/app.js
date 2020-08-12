@@ -7,6 +7,7 @@ const utils = require('./utils');
 // Import base routes
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
+const transactionRouter = require('./routes/transactions');
 
 mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://' + process.env.DB_USERNAME + ':' + process.env.DB_PASSWORD + '@' + process.env.DB_HOST + ':' + process.env.DB_PORT + '/' + process.env.DB_NAME);
@@ -20,6 +21,10 @@ db.once('open', function() {
   console.log('DB connection Ready');
 });
 
+//Init db
+utils.addUserToDb(process.env.RCA_ADMIN_USERNAME, process.env.RCA_ADMIN_PASSWORD, 'rca-admin');
+utils.addUserToDb(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD, 'admin');
+
 // Init express app
 const app = express();
 
@@ -32,6 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/', indexRouter);
 app.use('/users', userRouter);
+app.use('/transactions', transactionRouter);
 
 // Catch 404 errors
 app.use(function(req, res, next) {
@@ -44,8 +50,9 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.json({
-    message: err.message,
-    error: err
+    error: {
+      message : err.message
+    }
   });
 });
 
@@ -53,6 +60,4 @@ const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
-  //Init db
-  utils.addAdminUserToDb(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
 });

@@ -19,7 +19,7 @@ router.post('/', autenticationMiddleware.isAuth, [
         .exec(function(err, user) {
             if(err) return res.status(500).json({error:err});
             if(!user) return res.status(404).json({message: 'User not found'})
-            if (user.type !== 'admin') {
+            if (user.role !== 'rca-admin') {
               return res.status(401).json({
                 error: "Unauthorized",
                 message: "You are not authorized to execute this operation"
@@ -32,8 +32,8 @@ router.post('/', autenticationMiddleware.isAuth, [
     newUser.password = new Buffer(
         crypto.createHash('sha256').update(req.body.password, 'utf8').digest()
       ).toString('base64');
-    newUser.type = "user";  
-    newUser.save(function(err){
+    newUser.role = "user";  
+    newUser.save(async function(err){
       if(err) {
         if (err.code === 11000) {
           return res.status(409).json(
@@ -45,27 +45,28 @@ router.post('/', autenticationMiddleware.isAuth, [
         }
         return res.status(500).json({error: err});
       }
-      utils.registerAndEnrollUser(req.body.username, req.body.password);
+      await utils.registerAndEnrollUser(req.body.username);
       res.status(201).json(newUser);
     });
 });
 
-router.post('/enroll-admin', autenticationMiddleware.isAuth, function(req, res, next) {
+router.post('/enroll-admins', autenticationMiddleware.isAuth, function(req, res, next) {
   
   User.findOne({_id: res.locals.authInfo.userId}, "-password")
-      .exec(function(err, user) {
+      .exec(async function(err, user) {
           if(err) return res.status(500).json({error:err});
           if(!user) return res.status(404).json({message: 'User not found'})
-          if (user.type !== 'admin') {
+          if (user.role !== 'rca-admin') {
             return res.status(401).json({
               error: "Unauthorized",
               message: "You are not authorized to execute this operation"
             });
           }
 
-          utils.enrollAdminUser(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
+          await utils.enrollUser(process.env.RCA_ADMIN_USERNAME, process.env.RCA_ADMIN_PASSWORD);
+          await utils.enrollUser(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
           return res.status(201).json({
-            message: "Admin user succesfully enrolled"
+            message: "Admin users succesfully enrolled"
           });
       });
 });
