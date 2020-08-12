@@ -2,6 +2,11 @@ const express = require('express');
 const path = require('path');
 const cors = require("cors");
 const mongoose = require('mongoose');
+const utils = require('./utils');
+
+// Import base routes
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/users');
 
 mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://' + process.env.DB_USERNAME + ':' + process.env.DB_PASSWORD + '@' + process.env.DB_HOST + ':' + process.env.DB_PORT + '/' + process.env.DB_NAME);
@@ -25,9 +30,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/ping', function(req, res) {
-  res.send('pong');
-});
+app.use('/', indexRouter);
+app.use('/users', userRouter);
 
 // Catch 404 errors
 app.use(function(req, res, next) {
@@ -45,7 +49,10 @@ app.use(function(err, req, res, next) {
   });
 });
 
+const PORT = 3000;
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+  //Init db
+  utils.addAdminUserToDb(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
+});

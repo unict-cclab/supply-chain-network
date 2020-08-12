@@ -1,26 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cli-deliverer-db
-spec:
-  ports:
-    - port: 27017
-  selector:
-    app: cli-deliverer-db
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: cli-deliverer-db
-spec:
-  ports:
-    - port: 27017
-  selector:
-    app: cli-deliverer-db
----
-apiVersion: v1
-kind: Service
-metadata:
   name: cli-deliverer
   labels:
     app: cli-deliverer
@@ -32,54 +12,6 @@ spec:
     - protocol: TCP
       targetPort: 3000
       port: 3000
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cli-deliverer-db
-spec:
-  selector:
-    matchLabels:
-      app: cli-deliverer-db
-  template:
-    metadata:
-      labels:
-        app: cli-deliverer-db
-    spec:
-      containers:
-      - name: cli-deliverer-db
-        image: mongo:latest
-        ports:
-        - containerPort: 27017
-        envFrom:
-        - configMapRef:
-            name: deliverer-cli-db-env-file
-        - secretRef:
-            name: deliverer-cli-db-secret-file
-        volumeMounts:
-            - mountPath: /data/db
-              name: cli-deliverer-db-volume
-        readinessProbe:
-          exec:
-            command:
-            - mongo
-            - --eval
-            - "db.adminCommand('ping')"
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
-        livenessProbe:
-          exec:
-            command:
-            - mongo
-            - --eval
-            - "db.adminCommand('ping')"
-          initialDelaySeconds: 20
-          timeoutSeconds: 1
-      volumes:
-      - name: cli-deliverer-db-volume
-        hostPath:
-            path: /cli-deliverer-db-volume
-            type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -121,7 +53,7 @@ spec:
             httpGet:
               path: /ping
               port: 3000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 3
           readinessProbe:
             httpGet:
@@ -163,6 +95,14 @@ spec:
               value: "27017"
             - name: DB_NAME
               value: "admin"
+            - name: ADMIN_USERNAME
+              value: "admin-deliverer"
+            - name: ADMIN_PASSWORD
+              value: "delivererAdminPW"
+            - name: ORG_CA_HOST
+              value: "rca-deliverer"
+            - name: ORG_MSP_ID
+              value: "DelivererMSP"
       volumes:
         - name: deliverer-peer1-mount
           hostPath:

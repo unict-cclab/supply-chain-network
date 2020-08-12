@@ -917,8 +917,20 @@ start-couchdbs() {
 
 start-clis() {
   
-  mkdir -p $TMP_FOLDER/hyperledger/app
-  cp -a app/. $TMP_FOLDER/hyperledger/app
+  mkdir -p $TMP_FOLDER/hyperledger/app/regulatory-department-cli
+  cp -a app/. $TMP_FOLDER/hyperledger/app/regulatory-department-cli
+
+  mkdir -p $TMP_FOLDER/hyperledger/app/producer-cli
+  cp -a app/. $TMP_FOLDER/hyperledger/app/producer-cli
+
+  mkdir -p $TMP_FOLDER/hyperledger/app/manufacturer-cli
+  cp -a app/. $TMP_FOLDER/hyperledger/app/manufacturer-cli
+
+  mkdir -p $TMP_FOLDER/hyperledger/app/deliverer-cli
+  cp -a app/. $TMP_FOLDER/hyperledger/app/deliverer-cli
+
+  mkdir -p $TMP_FOLDER/hyperledger/app/retailer-cli
+  cp -a app/. $TMP_FOLDER/hyperledger/app/retailer-cli
 
   sep
   command "Building cli image"
@@ -931,9 +943,15 @@ start-clis() {
   command "Starting RegulatoryDepartment CLI"
   sep
 
-  kubectl create -f "$K8S/regulatory-department-cli/regulatory-department-cli.yaml" -n supply-chain-network
-  kubectl create -f "$K8S/regulatory-department-cli/regulatory-department-cli-service.yaml" -n supply-chain-network
+  kubectl create configmap regulatory-department-cli-db-env-file --from-env-file=$K8S/regulatory-department-cli/regulatory-department-cli-db-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap regulatory-department-cli-db-env-file -o yaml > $K8S/regulatory-department-cli/regulatory-department-cli-db-configmap.yml -n supply-chain-network
+  kubectl create secret generic regulatory-department-cli-db-secret-file --from-env-file=$K8S/regulatory-department-cli/regulatory-department-cli-db-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret regulatory-department-cli-db-secret-file -o yaml > $K8S/regulatory-department-cli/regulatory-department-cli-db-secret-file.yml -n supply-chain-network
 
+  kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli-db-configmap.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli-db-secret-file.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli-db.yaml" -n supply-chain-network
+  
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/regulatory-department/admin/msp/admincerts/
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/regulatory-department/msp/admincerts/admin-regulatory-department-cert.pem "$d"
@@ -945,9 +963,15 @@ start-clis() {
   command "Starting Producer CLI"
   sep
 
-  kubectl create -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
-  kubectl create -f "$K8S/producer-cli/producer-cli-service.yaml" -n supply-chain-network
+  kubectl create configmap producer-cli-db-env-file --from-env-file=$K8S/producer-cli/producer-cli-db-env-file.properties --save-config -n supply-chain-network
+  kubectl get configmap producer-cli-db-env-file -o yaml > $K8S/producer-cli/producer-cli-db-configmap.yml -n supply-chain-network
+  kubectl create secret generic producer-cli-db-secret-file --from-env-file=$K8S/producer-cli/producer-cli-db-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret producer-cli-db-secret-file -o yaml > $K8S/producer-cli/producer-cli-db-secret-file.yml -n supply-chain-network
 
+  kubectl apply -f "$K8S/producer-cli/producer-cli-db-configmap.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/producer-cli/producer-cli-db-secret-file.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/producer-cli/producer-cli-db.yaml" -n supply-chain-network
+  
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/producer/admin/msp/admincerts/
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/producer/msp/admincerts/admin-producer-cert.pem "$d"
@@ -956,9 +980,15 @@ start-clis() {
   command "Starting Manufacturer CLI"
   sep
 
-  kubectl create -f "$K8S/manufacturer-cli/manufacturer-cli.yaml" -n supply-chain-network
-  kubectl create -f "$K8S/manufacturer-cli/manufacturer-cli-service.yaml" -n supply-chain-network
+  kubectl create configmap manufacturer-cli-db-env-file --from-env-file=$K8S/manufacturer-cli/manufacturer-cli-db-env-file.properties --save-config -n supply-chain-network
+  kubectl get configmap manufacturer-cli-db-env-file -o yaml > $K8S/manufacturer-cli/manufacturer-cli-db-configmap.yml -n supply-chain-network
+  kubectl create secret generic manufacturer-cli-db-secret-file --from-env-file=$K8S/manufacturer-cli/manufacturer-cli-db-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret manufacturer-cli-db-secret-file -o yaml > $K8S/manufacturer-cli/manufacturer-cli-db-secret-file.yml -n supply-chain-network
 
+  kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli-db-configmap.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli-db-secret-file.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli-db.yaml" -n supply-chain-network
+  
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/manufacturer/admin/msp/admincerts/
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/manufacturer/msp/admincerts/admin-manufacturer-cert.pem "$d"
@@ -967,9 +997,15 @@ start-clis() {
   command "Starting Deliverer CLI"
   sep
 
-  kubectl create -f "$K8S/deliverer-cli/deliverer-cli.yaml" -n supply-chain-network
-  kubectl create -f "$K8S/deliverer-cli/deliverer-cli-service.yaml" -n supply-chain-network
+  kubectl create configmap deliverer-cli-db-env-file --from-env-file=$K8S/deliverer-cli/deliverer-cli-db-env-file.properties --save-config -n supply-chain-network
+  kubectl get configmap deliverer-cli-db-env-file -o yaml > $K8S/deliverer-cli/deliverer-cli-db-configmap.yml -n supply-chain-network
+  kubectl create secret generic deliverer-cli-db-secret-file --from-env-file=$K8S/deliverer-cli/deliverer-cli-db-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret deliverer-cli-db-secret-file -o yaml > $K8S/deliverer-cli/deliverer-cli-db-secret-file.yml -n supply-chain-network
 
+  kubectl apply -f "$K8S/deliverer-cli/deliverer-cli-db-configmap.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/deliverer-cli/deliverer-cli-db-secret-file.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/deliverer-cli/deliverer-cli-db.yaml" -n supply-chain-network
+  
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/deliverer/admin/msp/admincerts/
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/deliverer/msp/admincerts/admin-deliverer-cert.pem "$d"
@@ -978,18 +1014,39 @@ start-clis() {
   command "Starting Retailer CLI"
   sep
 
-  kubectl create -f "$K8S/retailer-cli/retailer-cli.yaml" -n supply-chain-network
-  kubectl create -f "$K8S/retailer-cli/retailer-cli-service.yaml" -n supply-chain-network
+  kubectl create configmap retailer-cli-db-env-file --from-env-file=$K8S/retailer-cli/retailer-cli-db-env-file.properties --save-config -n supply-chain-network
+  kubectl get configmap retailer-cli-db-env-file -o yaml > $K8S/retailer-cli/retailer-cli-db-configmap.yml -n supply-chain-network
+  kubectl create secret generic retailer-cli-db-secret-file --from-env-file=$K8S/retailer-cli/retailer-cli-db-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret retailer-cli-db-secret-file -o yaml > $K8S/retailer-cli/retailer-cli-db-secret-file.yml -n supply-chain-network
 
+  kubectl apply -f "$K8S/retailer-cli/retailer-cli-db-configmap.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/retailer-cli/retailer-cli-db-secret-file.yml" -n supply-chain-network
+  kubectl apply -f "$K8S/retailer-cli/retailer-cli-db.yaml" -n supply-chain-network
+  
   # Provide admincerts to admin msp
   d=$TMP_FOLDER/hyperledger/retailer/admin/msp/admincerts/
   mkdir -p "$d" && cp $TMP_FOLDER/hyperledger/retailer/msp/admincerts/admin-retailer-cert.pem "$d"
 
-  kubectl wait --for=condition=ready pod -l app=cli-regulatory-department --timeout=120s -n supply-chain-network
-  kubectl wait --for=condition=ready pod -l app=cli-producer --timeout=120s -n supply-chain-network
-  kubectl wait --for=condition=ready pod -l app=cli-manufacturer --timeout=120s -n supply-chain-network
-  kubectl wait --for=condition=ready pod -l app=cli-deliverer --timeout=120s -n supply-chain-network
-  kubectl wait --for=condition=ready pod -l app=cli-retailer --timeout=120s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-regulatory-department-db --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-producer-db --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-manufacturer-db --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-deliverer-db --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-retailer-db --timeout=240s -n supply-chain-network
+  
+  sleep 20
+
+  kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli.yaml" -n supply-chain-network
+  kubectl apply -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
+  kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli.yaml" -n supply-chain-network
+  kubectl apply -f "$K8S/deliverer-cli/deliverer-cli.yaml" -n supply-chain-network
+  kubectl apply -f "$K8S/retailer-cli/retailer-cli.yaml" -n supply-chain-network
+
+  kubectl wait --for=condition=ready pod -l app=cli-regulatory-department --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-producer --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-manufacturer --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-deliverer --timeout=240s -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=cli-retailer --timeout=240s -n supply-chain-network
+  
 
 }
 

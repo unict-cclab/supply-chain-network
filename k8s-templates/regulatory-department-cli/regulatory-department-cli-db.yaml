@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-regulatory-department-db
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: cli-regulatory-department-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-regulatory-department-db
+spec:
+  selector:
+    matchLabels:
+      app: cli-regulatory-department-db
+  template:
+    metadata:
+      labels:
+        app: cli-regulatory-department-db
+    spec:
+      containers:
+      - name: cli-regulatory-department-db
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        envFrom:
+        - configMapRef:
+            name: regulatory-department-cli-db-env-file
+        - secretRef:
+            name: regulatory-department-cli-db-secret-file
+        volumeMounts:
+            - mountPath: /data/db
+              name: cli-regulatory-department-db-volume
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 20
+          timeoutSeconds: 1
+      volumes:
+      - name: cli-regulatory-department-db-volume
+        hostPath:
+            path: /cli-regulatory-department-db-volume
+            type: DirectoryOrCreate

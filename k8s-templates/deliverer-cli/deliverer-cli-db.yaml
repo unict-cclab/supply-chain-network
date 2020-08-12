@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-deliverer-db
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: cli-deliverer-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-deliverer-db
+spec:
+  selector:
+    matchLabels:
+      app: cli-deliverer-db
+  template:
+    metadata:
+      labels:
+        app: cli-deliverer-db
+    spec:
+      containers:
+      - name: cli-deliverer-db
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        envFrom:
+        - configMapRef:
+            name: deliverer-cli-db-env-file
+        - secretRef:
+            name: deliverer-cli-db-secret-file
+        volumeMounts:
+            - mountPath: /data/db
+              name: cli-deliverer-db-volume
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 20
+          timeoutSeconds: 1
+      volumes:
+      - name: cli-deliverer-db-volume
+        hostPath:
+            path: /cli-deliverer-db-volume
+            type: DirectoryOrCreate

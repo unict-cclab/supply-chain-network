@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-manufacturer-db
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: cli-manufacturer-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-manufacturer-db
+spec:
+  selector:
+    matchLabels:
+      app: cli-manufacturer-db
+  template:
+    metadata:
+      labels:
+        app: cli-manufacturer-db
+    spec:
+      containers:
+      - name: cli-manufacturer-db
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        envFrom:
+        - configMapRef:
+            name: manufacturer-cli-db-env-file
+        - secretRef:
+            name: manufacturer-cli-db-secret-file
+        volumeMounts:
+            - mountPath: /data/db
+              name: cli-manufacturer-db-volume
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 20
+          timeoutSeconds: 1
+      volumes:
+      - name: cli-manufacturer-db-volume
+        hostPath:
+            path: /cli-manufacturer-db-volume
+            type: DirectoryOrCreate

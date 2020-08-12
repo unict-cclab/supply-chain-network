@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cli-retailer-db
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: cli-retailer-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli-retailer-db
+spec:
+  selector:
+    matchLabels:
+      app: cli-retailer-db
+  template:
+    metadata:
+      labels:
+        app: cli-retailer-db
+    spec:
+      containers:
+      - name: cli-retailer-db
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        envFrom:
+        - configMapRef:
+            name: retailer-cli-db-env-file
+        - secretRef:
+            name: retailer-cli-db-secret-file
+        volumeMounts:
+            - mountPath: /data/db
+              name: cli-retailer-db-volume
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 20
+          timeoutSeconds: 1
+      volumes:
+      - name: cli-retailer-db-volume
+        hostPath:
+            path: /cli-retailer-db-volume
+            type: DirectoryOrCreate

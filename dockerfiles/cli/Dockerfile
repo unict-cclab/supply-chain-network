@@ -4,4 +4,4 @@ RUN apk --no-cache add curl
 
 RUN apk add --update nodejs npm
 
-CMD [ "node", "/tmp/hyperledger/app/index.js" ]
+CMD [ "node", "/tmp/hyperledger/app/app.js" ]

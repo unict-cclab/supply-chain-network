@@ -1,8 +1,8 @@
 {
-  "name": "deliverer-client-application",
+  "name": "client-application",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "keywords": [],
   "author": "",
   "license": "Apache-2.0",
