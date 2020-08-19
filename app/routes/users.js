@@ -45,8 +45,20 @@ router.post('/', autenticationMiddleware.isAuth, [
         }
         return res.status(500).json({error: err});
       }
-      await utils.registerAndEnrollUser(req.body.username);
-      res.status(201).json(newUser);
+      try {
+        await utils.registerAndEnrollUser(req.body.username);
+      } catch (err) {
+          User.remove({_id: newUser._id}, function(err) {
+            if(err) return res.status(500).json({error: err})
+          });
+          return res.status(500).json({error:{
+            message : err.message
+          }});
+      }
+      //message : 'Successfully registered and enrolled user ' + newUser.username
+      return res.status(201).json({
+        message : newUser
+      });
     });
 });
 
@@ -62,9 +74,14 @@ router.post('/enroll-admins', autenticationMiddleware.isAuth, function(req, res,
               message: "You are not authorized to execute this operation"
             });
           }
-
-          await utils.enrollUser(process.env.RCA_ADMIN_USERNAME, process.env.RCA_ADMIN_PASSWORD);
-          await utils.enrollUser(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
+          try {
+            await utils.enrollUser(process.env.RCA_ADMIN_USERNAME, process.env.RCA_ADMIN_PASSWORD);
+            await utils.enrollUser(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
+          } catch (err) {
+              return res.status(500).json({error:{
+                message : err.message
+              }});
+          }
           return res.status(201).json({
             message: "Admin users succesfully enrolled"
           });

@@ -35,7 +35,7 @@ router.post('/login', [
         accessToken,
         expiresIn: 3600
       };
-      res.json(bodyResponse);
+      return res.json(bodyResponse);
     });
 });
 
