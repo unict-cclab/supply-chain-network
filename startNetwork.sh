@@ -1183,10 +1183,8 @@ fi
 source ./env.sh
 
 # Start minikube
-if minikube status | grep -q 'host: Stopped'; then
-  command "Starting Network"
-  minikube start --memory 4096
-fi
+command "Starting Network"
+minikube start --memory 4096
 
 # Use configuration file to generate kubernetes setup from the template
 ./applyConfig.sh
