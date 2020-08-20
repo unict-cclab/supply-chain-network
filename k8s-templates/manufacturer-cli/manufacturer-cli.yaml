@@ -34,6 +34,11 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
+          envFrom:
+          - configMapRef:
+              name: manufacturer-cli-env-file
+          - secretRef:
+              name: manufacturer-cli-secret-file
           tty: true
           workingDir: /tmp/hyperledger/chaincode
           volumeMounts:
@@ -61,52 +66,6 @@ spec:
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 3
-          env:
-            - name: GOPATH
-              value: "/opt/gopath"
-            - name: CORE_VM_ENDPOINT
-              value: "unix:///host/var/run/docker.sock"
-            # Uncomment for debugging
-            #- name: FABRIC_LOGGING_SPEC
-            #  value: "DEBUG"
-            - name: CORE_PEER_ID
-              value: "cli-manufacturer"
-            - name: CORE_PEER_ADDRESS
-              value: "peer1-manufacturer:7051"
-            - name: CORE_PEER_LOCALMSPID
-              value: "ManufacturerMSP"
-            - name: CORE_PEER_TLS_ENABLED
-              value: "true"
-            - name: CORE_PEER_TLS_ROOTCERT_FILE
-              value: "/tmp/hyperledger/manufacturer/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
-            - name: CORE_PEER_MSPCONFIGPATH
-              value: "/tmp/hyperledger/manufacturer/admin/msp"
-            - name: ANCHOR_PEER_IP
-              value: "peer1-manufacturer"
-            - name: ANCHOR_PEER_PORT
-              value: "7051"
-            - name: DB_USERNAME
-              value: "root"
-            - name: DB_PASSWORD
-              value: "toor"
-            - name: DB_HOST
-              value: "cli-manufacturer-db"
-            - name: DB_PORT
-              value: "27017"
-            - name: DB_NAME
-              value: "admin"
-            - name: RCA_ADMIN_USERNAME
-              value: "rca-manufacturer-admin"
-            - name: RCA_ADMIN_PASSWORD
-              value: "rca-manufacturer-adminpw"
-            - name: ADMIN_USERNAME
-              value: "admin-manufacturer"
-            - name: ADMIN_PASSWORD
-              value: "manufacturerAdminPW"
-            - name: ORG_CA_HOST
-              value: "rca-manufacturer"
-            - name: ORG_MSP_ID
-              value: "ManufacturerMSP"
       volumes:
         - name: manufacturer-peer1-mount
           hostPath:

@@ -25,6 +25,11 @@ setup-tls-ca() {
   command "TLS CA"
   sep
 
+  kubectl create configmap tls-ca-env-file --from-env-file=$K8S/tls-ca/tls-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap tls-ca-env-file -o yaml > $K8S/tls-ca/tls-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic tls-ca-secret-file --from-env-file=$K8S/tls-ca/tls-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret tls-ca-secret-file -o yaml > $K8S/tls-ca/tls-ca-secret-file.yml -n supply-chain-network
+
   # Create deployment for tls root ca
   if (($(kubectl get deployment -l app=ca-tls-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
     command "Creating TLS CA deployment"
@@ -88,6 +93,11 @@ setup-orderer-org-ca() {
   command "Orderer Org CA"
   sep
 
+  kubectl create configmap orderer-org-ca-env-file --from-env-file=$K8S/orderer-org-ca/orderer-org-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap orderer-org-ca-env-file -o yaml > $K8S/orderer-org-ca/orderer-org-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic orderer-org-ca-secret-file --from-env-file=$K8S/orderer-org-ca/orderer-org-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret orderer-org-ca-secret-file -o yaml > $K8S/orderer-org-ca/orderer-org-ca-secret-file.yml -n supply-chain-network
+
   # Create deployment for orderer org ca
   if (($(kubectl get deployment -l app=rca-orderer-org-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
     command "Creating Orderer Org CA deployment"
@@ -138,6 +148,11 @@ setup-regulatory-department-ca() {
   sep
   command "RegulatoryDepartment CA"
   sep
+
+  kubectl create configmap regulatory-department-ca-env-file --from-env-file=$K8S/regulatory-department-ca/regulatory-department-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap regulatory-department-ca-env-file -o yaml > $K8S/regulatory-department-ca/regulatory-department-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic regulatory-department-ca-secret-file --from-env-file=$K8S/regulatory-department-ca/regulatory-department-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret regulatory-department-ca-secret-file -o yaml > $K8S/regulatory-department-ca/regulatory-department-ca-secret-file.yml -n supply-chain-network
 
   # Create deployment for regulatory-department ca
   if (($(kubectl get deployment -l app=rca-regulatory-department-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
@@ -192,6 +207,11 @@ setup-producer-ca() {
   command "Producer CA"
   sep
 
+  kubectl create configmap producer-ca-env-file --from-env-file=$K8S/producer-ca/producer-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap producer-ca-env-file -o yaml > $K8S/producer-ca/producer-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic producer-ca-secret-file --from-env-file=$K8S/producer-ca/producer-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret producer-ca-secret-file -o yaml > $K8S/producer-ca/producer-ca-secret-file.yml -n supply-chain-network
+
   # Create deployment for producer ca
   if (($(kubectl get deployment -l app=rca-producer-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
     command "Creating Producer CA deployment"
@@ -244,6 +264,11 @@ setup-manufacturer-ca() {
   sep
   command "Manufacturer CA"
   sep
+
+  kubectl create configmap manufacturer-ca-env-file --from-env-file=$K8S/manufacturer-ca/manufacturer-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap manufacturer-ca-env-file -o yaml > $K8S/manufacturer-ca/manufacturer-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic manufacturer-ca-secret-file --from-env-file=$K8S/manufacturer-ca/manufacturer-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret manufacturer-ca-secret-file -o yaml > $K8S/manufacturer-ca/manufacturer-ca-secret-file.yml -n supply-chain-network
 
   # Create deployment for manufacturer ca
   if (($(kubectl get deployment -l app=rca-manufacturer-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
@@ -298,6 +323,11 @@ setup-deliverer-ca() {
   command "Deliverer CA"
   sep
 
+  kubectl create configmap deliverer-ca-env-file --from-env-file=$K8S/deliverer-ca/deliverer-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap deliverer-ca-env-file -o yaml > $K8S/deliverer-ca/deliverer-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic deliverer-ca-secret-file --from-env-file=$K8S/deliverer-ca/deliverer-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret deliverer-ca-secret-file -o yaml > $K8S/deliverer-ca/deliverer-ca-secret-file.yml -n supply-chain-network
+
   # Create deployment for deliverer ca
   if (($(kubectl get deployment -l app=rca-deliverer-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
     command "Creating Deliverer CA deployment"
@@ -350,6 +380,11 @@ setup-retailer-ca() {
   sep
   command "Retailer CA"
   sep
+
+  kubectl create configmap retailer-ca-env-file --from-env-file=$K8S/retailer-ca/retailer-ca-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap retailer-ca-env-file -o yaml > $K8S/retailer-ca/retailer-ca-configmap.yml -n supply-chain-network
+  kubectl create secret generic retailer-ca-secret-file --from-env-file=$K8S/retailer-ca/retailer-ca-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret retailer-ca-secret-file -o yaml > $K8S/retailer-ca/retailer-ca-secret-file.yml -n supply-chain-network
 
   # Create deployment for retailer ca
   if (($(kubectl get deployment -l app=rca-retailer-root --ignore-not-found -n supply-chain-network | wc -l) < 2)); then
@@ -684,6 +719,11 @@ start-regulatory-department-peer1() {
   command "Starting RegulatoryDepartment Peer1"
   sep
 
+  kubectl create configmap regulatory-department-peer1-env-file --from-env-file=$K8S/regulatory-department-peer1/regulatory-department-peer1-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap regulatory-department-peer1-env-file -o yaml > $K8S/regulatory-department-peer1/regulatory-department-peer1-configmap.yml -n supply-chain-network
+  kubectl create secret generic regulatory-department-peer1-secret-file --from-env-file=$K8S/regulatory-department-peer1/regulatory-department-peer1-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret regulatory-department-peer1-secret-file -o yaml > $K8S/regulatory-department-peer1/regulatory-department-peer1-secret-file.yml -n supply-chain-network
+
   kubectl create -f "$K8S/regulatory-department-peer1/regulatory-department-peer1.yaml" -n supply-chain-network
   kubectl create -f "$K8S/regulatory-department-peer1/regulatory-department-peer1-service.yaml" -n supply-chain-network
 }
@@ -692,6 +732,11 @@ start-producer-peer1() {
   sep
   command "Starting Producer Peer1"
   sep
+
+  kubectl create configmap producer-peer1-env-file --from-env-file=$K8S/producer-peer1/producer-peer1-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap producer-peer1-env-file -o yaml > $K8S/producer-peer1/producer-peer1-configmap.yml -n supply-chain-network
+  kubectl create secret generic producer-peer1-secret-file --from-env-file=$K8S/producer-peer1/producer-peer1-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret producer-peer1-secret-file -o yaml > $K8S/producer-peer1/producer-peer1-secret-file.yml -n supply-chain-network
 
   kubectl create -f "$K8S/producer-peer1/producer-peer1.yaml" -n supply-chain-network
   kubectl create -f "$K8S/producer-peer1/producer-peer1-service.yaml" -n supply-chain-network
@@ -702,6 +747,11 @@ start-manufacturer-peer1() {
   command "Starting Manufacturer Peer1"
   sep
 
+  kubectl create configmap manufacturer-peer1-env-file --from-env-file=$K8S/manufacturer-peer1/manufacturer-peer1-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap manufacturer-peer1-env-file -o yaml > $K8S/manufacturer-peer1/manufacturer-peer1-configmap.yml -n supply-chain-network
+  kubectl create secret generic manufacturer-peer1-secret-file --from-env-file=$K8S/manufacturer-peer1/manufacturer-peer1-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret manufacturer-peer1-secret-file -o yaml > $K8S/manufacturer-peer1/manufacturer-peer1-secret-file.yml -n supply-chain-network
+
   kubectl create -f "$K8S/manufacturer-peer1/manufacturer-peer1.yaml" -n supply-chain-network
   kubectl create -f "$K8S/manufacturer-peer1/manufacturer-peer1-service.yaml" -n supply-chain-network
 }
@@ -711,6 +761,11 @@ start-deliverer-peer1() {
   command "Starting Deliverer Peer1"
   sep
 
+  kubectl create configmap deliverer-peer1-env-file --from-env-file=$K8S/deliverer-peer1/deliverer-peer1-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap deliverer-peer1-env-file -o yaml > $K8S/deliverer-peer1/deliverer-peer1-configmap.yml -n supply-chain-network
+  kubectl create secret generic deliverer-peer1-secret-file --from-env-file=$K8S/deliverer-peer1/deliverer-peer1-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret deliverer-peer1-secret-file -o yaml > $K8S/deliverer-peer1/deliverer-peer1-secret-file.yml -n supply-chain-network
+
   kubectl create -f "$K8S/deliverer-peer1/deliverer-peer1.yaml" -n supply-chain-network
   kubectl create -f "$K8S/deliverer-peer1/deliverer-peer1-service.yaml" -n supply-chain-network
 }
@@ -719,6 +774,11 @@ start-retailer-peer1() {
   sep
   command "Starting Retailer Peer1"
   sep
+
+  kubectl create configmap retailer-peer1-env-file --from-env-file=$K8S/retailer-peer1/retailer-peer1-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap retailer-peer1-env-file -o yaml > $K8S/retailer-peer1/retailer-peer1-configmap.yml -n supply-chain-network
+  kubectl create secret generic retailer-peer1-secret-file --from-env-file=$K8S/retailer-peer1/retailer-peer1-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret retailer-peer1-secret-file -o yaml > $K8S/retailer-peer1/retailer-peer1-secret-file.yml -n supply-chain-network
 
   kubectl create -f "$K8S/retailer-peer1/retailer-peer1.yaml" -n supply-chain-network
   kubectl create -f "$K8S/retailer-peer1/retailer-peer1-service.yaml" -n supply-chain-network
@@ -778,6 +838,9 @@ setup-orderer() {
   sep
   command "Starting Orderer"
   sep
+
+  kubectl create configmap orderer-env-file --from-env-file=$K8S/orderer/orderer-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap orderer-env-file -o yaml > $K8S/orderer/orderer-configmap.yml -n supply-chain-network
 
   kubectl create -f "$K8S/orderer/orderer.yaml" -n supply-chain-network
   kubectl create -f "$K8S/orderer/orderer-service.yaml" -n supply-chain-network
@@ -877,12 +940,18 @@ start-couchdbs() {
   command "Starting RegulatoryDepartment CouchDB"
   sep
 
+  kubectl create secret generic couchdb0-secret-file --from-env-file=$K8S/couchdb0/couchdb0-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret couchdb0-secret-file -o yaml > $K8S/couchdb0/couchdb0-secret-file.yml -n supply-chain-network
+
   kubectl create -f $K8S/couchdb0/couchdb0.yaml -n supply-chain-network
   kubectl create -f $K8S/couchdb0/couchdb0-service.yaml -n supply-chain-network
 
   sep
   command "Starting Producer CouchDB"
   sep
+
+  kubectl create secret generic couchdb1-secret-file --from-env-file=$K8S/couchdb1/couchdb1-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret couchdb1-secret-file -o yaml > $K8S/couchdb1/couchdb1-secret-file.yml -n supply-chain-network
 
   kubectl create -f $K8S/couchdb1/couchdb1.yaml -n supply-chain-network
   kubectl create -f $K8S/couchdb1/couchdb1-service.yaml -n supply-chain-network
@@ -891,6 +960,9 @@ start-couchdbs() {
   command "Starting Manufacturer CouchDB"
   sep
 
+  kubectl create secret generic couchdb2-secret-file --from-env-file=$K8S/couchdb2/couchdb2-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret couchdb2-secret-file -o yaml > $K8S/couchdb2/couchdb2-secret-file.yml -n supply-chain-network
+
   kubectl create -f $K8S/couchdb2/couchdb2.yaml -n supply-chain-network
   kubectl create -f $K8S/couchdb2/couchdb2-service.yaml -n supply-chain-network
 
@@ -898,12 +970,18 @@ start-couchdbs() {
   command "Starting Deliverer CouchDB"
   sep
 
+  kubectl create secret generic couchdb3-secret-file --from-env-file=$K8S/couchdb3/couchdb3-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret couchdb3-secret-file -o yaml > $K8S/couchdb3/couchdb3-secret-file.yml -n supply-chain-network
+
   kubectl create -f $K8S/couchdb3/couchdb3.yaml -n supply-chain-network
   kubectl create -f $K8S/couchdb3/couchdb3-service.yaml -n supply-chain-network
 
   sep
   command "Starting Retailer CouchDB"
   sep
+
+  kubectl create secret generic couchdb4-secret-file --from-env-file=$K8S/couchdb4/couchdb4-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret couchdb4-secret-file -o yaml > $K8S/couchdb4/couchdb4-secret-file.yml -n supply-chain-network
 
   kubectl create -f $K8S/couchdb4/couchdb4.yaml -n supply-chain-network
   kubectl create -f $K8S/couchdb4/couchdb4-service.yaml -n supply-chain-network
@@ -1039,18 +1117,63 @@ start-clis() {
   command "Starting CLIS"
   sep
 
+  sep
+  command "Starting RegulatoryDepartment CLI"
+  sep
+
+  kubectl create configmap regulatory-department-cli-env-file --from-env-file=$K8S/regulatory-department-cli/regulatory-department-cli-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap regulatory-department-cli-env-file -o yaml > $K8S/regulatory-department-cli/regulatory-department-cli-configmap.yml -n supply-chain-network
+  kubectl create secret generic regulatory-department-cli-secret-file --from-env-file=$K8S/regulatory-department-cli/regulatory-department-cli-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret regulatory-department-cli-secret-file -o yaml > $K8S/regulatory-department-cli/regulatory-department-cli-secret-file.yml -n supply-chain-network
+
   kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-regulatory-department --timeout=240s -n supply-chain-network
+
+  sep
+  command "Starting Producer CLI"
+  sep
+
+  kubectl create configmap producer-cli-env-file --from-env-file=$K8S/producer-cli/producer-cli-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap producer-cli-env-file -o yaml > $K8S/producer-cli/producer-cli-configmap.yml -n supply-chain-network
+  kubectl create secret generic producer-cli-secret-file --from-env-file=$K8S/producer-cli/producer-cli-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret producer-cli-secret-file -o yaml > $K8S/producer-cli/producer-cli-secret-file.yml -n supply-chain-network
 
   kubectl apply -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-producer --timeout=240s -n supply-chain-network
 
+  sep
+  command "Starting Manufacturer CLI"
+  sep
+
+  kubectl create configmap manufacturer-cli-env-file --from-env-file=$K8S/manufacturer-cli/manufacturer-cli-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap manufacturer-cli-env-file -o yaml > $K8S/manufacturer-cli/manufacturer-cli-configmap.yml -n supply-chain-network
+  kubectl create secret generic manufacturer-cli-secret-file --from-env-file=$K8S/manufacturer-cli/manufacturer-cli-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret manufacturer-cli-secret-file -o yaml > $K8S/manufacturer-cli/manufacturer-cli-secret-file.yml -n supply-chain-network
+  
   kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-manufacturer --timeout=240s -n supply-chain-network
+  
+  sep
+  command "Starting Deliverer CLI"
+  sep
 
+  kubectl create configmap deliverer-cli-env-file --from-env-file=$K8S/deliverer-cli/deliverer-cli-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap deliverer-cli-env-file -o yaml > $K8S/deliverer-cli/deliverer-cli-configmap.yml -n supply-chain-network
+  kubectl create secret generic deliverer-cli-secret-file --from-env-file=$K8S/deliverer-cli/deliverer-cli-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret deliverer-cli-secret-file -o yaml > $K8S/deliverer-cli/deliverer-cli-secret-file.yml -n supply-chain-network
+  
   kubectl apply -f "$K8S/deliverer-cli/deliverer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-deliverer --timeout=240s -n supply-chain-network
 
+  sep
+  command "Starting Retailer CLI"
+  sep
+
+  kubectl create configmap retailer-cli-env-file --from-env-file=$K8S/retailer-cli/retailer-cli-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap retailer-cli-env-file -o yaml > $K8S/retailer-cli/retailer-cli-configmap.yml -n supply-chain-network
+  kubectl create secret generic retailer-cli-secret-file --from-env-file=$K8S/retailer-cli/retailer-cli-secret-file.properties --save-config -n supply-chain-network
+  kubectl get secret retailer-cli-secret-file -o yaml > $K8S/retailer-cli/retailer-cli-secret-file.yml -n supply-chain-network
+  
   kubectl apply -f "$K8S/retailer-cli/retailer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-retailer --timeout=240s -n supply-chain-network
 

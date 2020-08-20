@@ -34,6 +34,11 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
+          envFrom:
+          - configMapRef:
+              name: retailer-cli-env-file
+          - secretRef:
+              name: retailer-cli-secret-file
           tty: true
           workingDir: /tmp/hyperledger/chaincode
           volumeMounts:
@@ -61,53 +66,6 @@ spec:
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 3
-          env:
-            - name: GOPATH
-              value: "/opt/gopath"
-            - name: CORE_VM_ENDPOINT
-              value: "unix:///host/var/run/docker.sock"
-            # Uncomment for debugging
-            #- name: FABRIC_LOGGING_SPEC
-            #  value: "DEBUG"
-            - name: CORE_PEER_ID
-              value: "cli-retailer"
-            - name: CORE_PEER_ADDRESS
-              value: "peer1-retailer:7051"
-            - name: CORE_PEER_LOCALMSPID
-              value: "RetailerMSP"
-            - name: CORE_PEER_TLS_ENABLED
-              value: "true"
-            - name: CORE_PEER_TLS_ROOTCERT_FILE
-              value: "/tmp/hyperledger/retailer/peer1/tls-msp/tlscacerts/${PEERS_TLSCACERTS}"
-            - name: CORE_PEER_MSPCONFIGPATH
-              value: "/tmp/hyperledger/retailer/admin/msp"
-            - name: ANCHOR_PEER_IP
-              value: "peer1-retailer"
-            - name: ANCHOR_PEER_PORT
-              value: "7051"
-            - name: DB_USERNAME
-              value: "root"
-            - name: DB_PASSWORD
-              value: "toor"
-            - name: DB_HOST
-              value: "cli-retailer-db"
-            - name: DB_PORT
-              value: "27017"
-            - name: DB_NAME
-              value: "admin"
-            - name: RCA_ADMIN_USERNAME
-              value: "rca-retailer-admin"
-            - name: RCA_ADMIN_PASSWORD
-              value: "rca-retailer-adminpw"
-            - name: ADMIN_USERNAME
-              value: "admin-retailer"
-            - name: ADMIN_PASSWORD
-              value: "retailerAdminPW"
-            - name: ORG_CA_HOST
-              value: "rca-retailer"
-            - name: ORG_MSP_ID
-              value: "RetailerMSP"
-            
       volumes:
         - name: retailer-peer1-mount
           hostPath:

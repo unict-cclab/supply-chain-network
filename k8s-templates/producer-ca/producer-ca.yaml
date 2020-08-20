@@ -17,21 +17,15 @@ spec:
               - name: rca-producer
                 image: hyperledger/fabric-ca:1.4.7
                 imagePullPolicy: IfNotPresent
-                command: ["fabric-ca-server", "start", "-b", "rca-producer-admin:rca-producer-adminpw", "--port", "7055"]
+                command: ["fabric-ca-server", "start", "-b", "$(RCA_ADMIN_USERNAME):$(RCA_ADMIN_PASSWORD)", "--port", "7055"]
                 volumeMounts:
                   - mountPath: /tmp/hyperledger/fabric-ca
                     name: ca-mount
-                env:
-                - name: FABRIC_CA_HOME
-                  value: "/tmp/hyperledger/fabric-ca/crypto"
-                - name: FABRIC_CA_SERVER_TLS_ENABLED
-                  value: "true"
-                - name: FABRIC_CA_SERVER_CSR_CN
-                  value: "rca-producer"
-                - name: FABRIC_CA_SERVER_CSR_HOSTS
-                  value: "${IP}"
-                - name: FABRIC_CA_SERVER_DEBUG
-                  value: "true"
+                envFrom:
+                  - configMapRef:
+                      name: producer-ca-env-file
+                  - secretRef:
+                      name: producer-ca-secret-file
             volumes:
               - name: ca-mount
                 hostPath:

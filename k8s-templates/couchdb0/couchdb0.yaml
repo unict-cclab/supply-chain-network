@@ -17,8 +17,6 @@ spec:
               - name: couchdb0
                 image: couchdb:latest
                 imagePullPolicy: IfNotPresent
-                env:
-                - name: COUCHDB_USER
-                  value: "admin"
-                - name: COUCHDB_PASSWORD
-                  value: "adminpw"
+                envFrom:
+                  - secretRef:
+                        name: couchdb0-secret-file
