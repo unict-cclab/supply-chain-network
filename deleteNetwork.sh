@@ -3,7 +3,7 @@
 source ./env.sh
 
 # Make sure minikube is running
-if minikube status | grep -q 'host: Stopped'; then
+if ! minikube status | grep -q 'host: Running'; then
   minikube start
 fi
 
@@ -11,7 +11,8 @@ fi
 kubectl delete -f $K8S/namespace.yaml
 
 echo Delete temporary directories
-rm -rf $TMP_FOLDER/*
+rm $TMP_FOLDER/ca-cert.pem
+rm -rf $TMP_FOLDER/hyperledger/*
 rm -rf $K8S
 
 minikube ssh -- sudo rm -r /cli-regulatory-department-db-volume

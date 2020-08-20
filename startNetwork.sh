@@ -1033,24 +1033,26 @@ start-clis() {
   kubectl wait --for=condition=ready pod -l app=cli-deliverer-db --timeout=240s -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-retailer-db --timeout=240s -n supply-chain-network
   
-  sleep 20
+  sleep 30
 
   sep
   command "Starting CLIS"
   sep
 
   kubectl apply -f "$K8S/regulatory-department-cli/regulatory-department-cli.yaml" -n supply-chain-network
-  kubectl apply -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
-  kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli.yaml" -n supply-chain-network
-  kubectl apply -f "$K8S/deliverer-cli/deliverer-cli.yaml" -n supply-chain-network
-  kubectl apply -f "$K8S/retailer-cli/retailer-cli.yaml" -n supply-chain-network
-
   kubectl wait --for=condition=ready pod -l app=cli-regulatory-department --timeout=240s -n supply-chain-network
+
+  kubectl apply -f "$K8S/producer-cli/producer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-producer --timeout=240s -n supply-chain-network
+
+  kubectl apply -f "$K8S/manufacturer-cli/manufacturer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-manufacturer --timeout=240s -n supply-chain-network
+
+  kubectl apply -f "$K8S/deliverer-cli/deliverer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-deliverer --timeout=240s -n supply-chain-network
+
+  kubectl apply -f "$K8S/retailer-cli/retailer-cli.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=cli-retailer --timeout=240s -n supply-chain-network
-  
 
 }
 
@@ -1184,7 +1186,9 @@ source ./env.sh
 
 # Start minikube
 command "Starting Network"
-minikube start --memory 4096
+if ! minikube status | grep -q 'host: Running'; then
+  minikube start --driver=virtualbox --memory 6120
+fi
 
 # Use configuration file to generate kubernetes setup from the template
 ./applyConfig.sh
