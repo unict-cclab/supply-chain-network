@@ -1310,7 +1310,7 @@ source ./env.sh
 # Start minikube
 command "Starting Network"
 if ! minikube status | grep -q 'host: Running'; then
-  minikube start --driver=virtualbox --memory 6120
+  minikube start
 fi
 
 # Use configuration file to generate kubernetes setup from the template
