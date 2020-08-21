@@ -25,40 +25,39 @@ router.post('/', autenticationMiddleware.isAuth, [
                 message: "You are not authorized to execute this operation"
               });
             }
+            
+            const newUser = new User();
+            newUser.username = req.body.username;
+            newUser.password = new Buffer(
+                crypto.createHash('sha256').update(req.body.password, 'utf8').digest()
+              ).toString('base64');
+            newUser.role = "user";  
+            newUser.save(async function(err){
+              if(err) {
+                if (err.code === 11000) {
+                  return res.status(409).json(
+                    {
+                      error: "Invalid username",
+                      message: "This username is already taken"
+                    }
+                  );
+                }
+                return res.status(500).json({error: err});
+              }
+              try {
+                await utils.registerAndEnrollUser(req.body.username);
+              } catch (err) {
+                  User.remove({_id: newUser._id}, function(err) {
+                    if(err) return res.status(500).json({error: err})
+                  });
+                  return res.status(500).json({error:{
+                    message : err.message
+                  }});
+              }
+              return res.status(201).json({
+                message : 'Successfully registered and enrolled user ' + newUser.username
+              });
         });
-
-    const newUser = new User();
-    newUser.username = req.body.username;
-    newUser.password = new Buffer(
-        crypto.createHash('sha256').update(req.body.password, 'utf8').digest()
-      ).toString('base64');
-    newUser.role = "user";  
-    newUser.save(async function(err){
-      if(err) {
-        if (err.code === 11000) {
-          return res.status(409).json(
-            {
-              error: "Invalid username",
-              message: "This username is already taken"
-            }
-          );
-        }
-        return res.status(500).json({error: err});
-      }
-      try {
-        await utils.registerAndEnrollUser(req.body.username);
-      } catch (err) {
-          User.remove({_id: newUser._id}, function(err) {
-            if(err) return res.status(500).json({error: err})
-          });
-          return res.status(500).json({error:{
-            message : err.message
-          }});
-      }
-      //message : 'Successfully registered and enrolled user ' + newUser.username
-      return res.status(201).json({
-        message : newUser
-      });
     });
 });
 
