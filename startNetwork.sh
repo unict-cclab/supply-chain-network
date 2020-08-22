@@ -995,21 +995,6 @@ start-couchdbs() {
 
 start-clis() {
   
-  mkdir -p $TMP_FOLDER/hyperledger/app/regulatory-department-cli
-  cp -a app/. $TMP_FOLDER/hyperledger/app/regulatory-department-cli
-
-  mkdir -p $TMP_FOLDER/hyperledger/app/producer-cli
-  cp -a app/. $TMP_FOLDER/hyperledger/app/producer-cli
-
-  mkdir -p $TMP_FOLDER/hyperledger/app/manufacturer-cli
-  cp -a app/. $TMP_FOLDER/hyperledger/app/manufacturer-cli
-
-  mkdir -p $TMP_FOLDER/hyperledger/app/deliverer-cli
-  cp -a app/. $TMP_FOLDER/hyperledger/app/deliverer-cli
-
-  mkdir -p $TMP_FOLDER/hyperledger/app/retailer-cli
-  cp -a app/. $TMP_FOLDER/hyperledger/app/retailer-cli
-
   sep
   command "Building cli image"
   sep
@@ -1195,19 +1180,12 @@ create-channel() {
   command "Creating channel using CLI_REGULATORY_DEPARTMENT on RegulatoryDepartment Peer1"
   sep
 
-  mkdir -p $TMP_FOLDER/hyperledger/scripts
-
-  cp -a scripts/. $TMP_FOLDER/hyperledger/scripts
-
   CLI_REGULATORY_DEPARTMENT=$(get_pods "cli-regulatory-department")
 
   # Use CLI shell to create channel
-  #source ./settings.sh
-  #envsubst <scripts/createChannel.sh>$TMP_FOLDER/.createChannel.sh
-
+  
   kubectl exec -n supply-chain-network $CLI_REGULATORY_DEPARTMENT -- /bin/bash -c "/tmp/hyperledger/scripts/createChannel.sh regulatory-department"
-  #rm $TMP_FOLDER/.createChannel.sh
-
+  
   # Copy mychannel.block from peer1-regulatory-department to peer1-producer
   cp $TMP_FOLDER/hyperledger/regulatory-department/peer1/assets/mychannel.block $TMP_FOLDER/hyperledger/producer/peer1/assets/mychannel.block
 
