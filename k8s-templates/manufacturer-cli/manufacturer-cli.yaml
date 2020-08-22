@@ -46,14 +46,8 @@ spec:
               name: manufacturer-admin-mount
             - mountPath: /tmp/hyperledger/manufacturer/peer1
               name: manufacturer-peer1-mount
-            - mountPath: /tmp/hyperledger/scripts
-              name: scripts-mount
-            - mountPath: /tmp/hyperledger/chaincode
-              name: chaincode-mount
             - mountPath: /tmp/hyperledger/shared
               name: shared-mount
-            - mountPath: /tmp/hyperledger/app
-              name: app-mount
           livenessProbe:
             httpGet:
               path: /ping
@@ -73,18 +67,9 @@ spec:
         - name: manufacturer-admin-mount
           hostPath:
             path: /hyperledger/manufacturer/admin
-        - name: chaincode-mount
-          hostPath:
-            path: /hyperledger/chaincode
-        - name: scripts-mount
-          hostPath:
-            path: /hyperledger/scripts
         - name: shared-mount
           hostPath:
             path: /hyperledger/shared
         - name: docker-mount
           hostPath:
             path: /var/run/
-        - name: app-mount
-          hostPath:
-            path: /hyperledger/app/manufacturer-cli
