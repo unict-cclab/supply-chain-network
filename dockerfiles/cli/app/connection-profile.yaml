@@ -1,0 +1,129 @@
+---
+name: supply-chain-connection-profile
+x-type: hlfv1
+version: 1.1
+description: Supply chain connection profile
+channels:
+  mychannel:
+    orderers:
+      - orderer
+    peers:
+      peer1-producer:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1-manufacturer:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1-deliverer:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1-retailer:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1-regulatory-department:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+organizations:
+  Producer:
+    mspid: ProducerMSP
+    peers:
+      - peer1-producer
+    certificateAuthorities:
+      - rca-producer
+  Manufacturer:
+    mspid: ManufacturerMSP
+    peers:
+      - peer1-manufacturer
+    certificateAuthorities:
+      - rca-manufacturer
+  Deliverer:
+    mspid: DelivererMSP
+    peers:
+      - peer1-deliverer
+    certificateAuthorities:
+      - rca-deliverer
+  Retailer:
+    mspid: RetailerMSP
+    peers:
+      - peer1-retailer
+    certificateAuthorities:
+      - rca-retailer
+  RegulatoryDepartment:
+    mspid: RegulatoryDepartmentMSP
+    peers:
+      - peer1-regulatory-department
+    certificateAuthorities:
+      - rca-regulatory-department
+orderers:
+  orderer:
+    url: grpcs://orderer:7050
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/orderer-org/msp/tlscacerts/tls-ca-cert.pem
+peers:
+  peer1-producer:
+    url: grpcs://peer1-producer:7051
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/producer/msp/tlscacerts/tls-ca-cert.pem
+  peer1-manufacturer:
+    url: grpcs://peer1-manufacturer:7051
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/manufacturer/msp/tlscacerts/tls-ca-cert.pem
+  peer1-deliverer:
+    url: grpcs://peer1-deliverer:7051
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/deliverer/msp/tlscacerts/tls-ca-cert.pem
+  peer1-retailer:
+    url: grpcs://peer1-retailer:7051
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/retailer/msp/tlscacerts/tls-ca-cert.pem
+  peer1-regulatory-department:
+    url: grpcs://peer1-regulatory-department:7051
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/regulatory-department/msp/tlscacerts/tls-ca-cert.pem
+certificateAuthorities:
+  rca-producer:
+    url: https://rca-producer:7055
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/producer/msp/tlscacerts/tls-ca-cert.pem
+  rca-manufacturer:
+    url: https://rca-manufacturer:7056
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/manufacturer/msp/tlscacerts/tls-ca-cert.pem
+  rca-deliverer:
+    url: https://rca-deliverer:7057
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/deliverer/msp/tlscacerts/tls-ca-cert.pem
+  rca-retailer:
+    url: https://rca-retailer:7058
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/retailer/msp/tlscacerts/tls-ca-cert.pem
+  rca-orderer-org:
+    url: https://rca-orderer-org:7053
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/orderer-org/msp/tlscacerts/tls-ca-cert.pem
+  rca-regulatory-department:
+    url: https://rca-regulatory-department:7054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /tmp/hyperledger/shared/regulatory-department/msp/tlscacerts/tls-ca-cert.pem
