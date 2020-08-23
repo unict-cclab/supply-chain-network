@@ -1294,14 +1294,6 @@ fi
 # Use configuration file to generate kubernetes setup from the template
 ./applyConfig.sh
 
-mkdir -p $TMP_FOLDER/hyperledger
-
-# Mount tmp folder
-small_sep
-command "Mounting tmp folder to minikube"
-minikube mount $TMP_FOLDER/hyperledger:/hyperledger &
-sleep 3
-
 small_sep
 kubectl create -f $K8S/namespace.yaml
 
