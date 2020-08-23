@@ -15,8 +15,6 @@ class Batch extends State {
 
     constructor(obj) {
         super(Batch.getClass(), [obj.id]);
-        this.currentBlockerOrgId = null;
-        this.currentReceiverOrgId = null;
         Object.assign(this, obj);
     }
 
