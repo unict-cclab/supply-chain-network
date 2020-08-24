@@ -1291,6 +1291,12 @@ if ! minikube status | grep -q 'host: Running'; then
   minikube start
 fi
 
+mkdir -p $TMP_FOLDER/hyperledger
+
+# Mount tmp folder
+minikube mount $TMP_FOLDER/hyperledger:/hyperledger &
+sleep 3
+
 # Use configuration file to generate kubernetes setup from the template
 ./applyConfig.sh
 
