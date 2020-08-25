@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 const FabricCAServices = require('fabric-ca-client');
-const { Gateway, Wallets } = require('fabric-network');
+const { Gateway, Wallets, DefaultEventHandlerStrategies } = require('fabric-network');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
@@ -133,7 +133,9 @@ async function submitTransaction(username, args) {
   // Create a new gateway for connecting to our peer node.
   const gateway = new Gateway();
   
-  await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: false }, clientTlsIdentity: username});
+  await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: false }, clientTlsIdentity: username, eventHandlerOptions: {
+    strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ALLFORTX
+  }});
   // Get the network (channel) our contract is deployed to.
   
   const network = await gateway.getNetwork('mychannel');
