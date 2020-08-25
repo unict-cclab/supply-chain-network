@@ -114,20 +114,17 @@ class Product extends State {
         if(this.isPending()){
             this.setRefused();
             this.setRefuserOrgId(blockerOrgId);
-            return;
         }
-        if(this.isUnblocked()){
+        else if(this.isUnblocked())
             this.setProductTypeBlocked();
-        }
         else if(this.isProductBlocked())
             this.setProductAndProductTypeBlocked();
     }
 
     unblockProductType() {
-        if(this.isProductTypeBlocked()){
+        if(this.isProductTypeBlocked())
             this.setUnblocked();
-        }
-        if(this.isProductAndProductTypeBlocked())
+        else if(this.isProductAndProductTypeBlocked())
             this.setProductBlocked();
     }
 
@@ -135,9 +132,8 @@ class Product extends State {
         if(this.isPending()){
             this.setRefused();
             this.setRefuserOrgId(blockerOrgId);
-            return;
         }
-        if(this.isUnblocked()){
+        else if(this.isUnblocked()){
             this.setProductBlocked();
             this.setCurrentBlockerOrgId(blockerOrgId);
         }
@@ -148,7 +144,7 @@ class Product extends State {
             this.setUnblocked();
             this.setCurrentBlockerOrgId(null);
         }
-        if(this.isProductAndProductTypeBlocked()){
+        else if(this.isProductAndProductTypeBlocked()){
             this.setProductTypeBlocked();
             this.setCurrentBlockerOrgId(null);
         }

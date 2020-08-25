@@ -30,6 +30,13 @@ class ProductList extends StateList {
         queryString.selector.productTypeName = productTypeName;
         return this.getStatesForQueryString(JSON.stringify(queryString));
     }
+
+    async getAllProducts() {
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.class = Product.getClass();
+        return this.getStatesForQueryString(JSON.stringify(queryString));
+    }
 }
 
 

@@ -153,7 +153,7 @@ class SupplyChainContract extends Contract {
 
             roleSet = RoleSet.createInstance(orgId,roles);
             await ctx.roleSetList.addRoleSet(roleSet);
-            return roleSet;
+            return "Successfully added role set for org id " + orgId;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -196,7 +196,7 @@ class SupplyChainContract extends Contract {
             productType.setBlocked();
             productType.setCurrentBlockerOrgId(ctx.clientIdentity.getMSPID());
             await ctx.productTypeList.addProductType(productType);
-            return productType;
+            return "Successfully added productType with name " + productTypeName;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -235,7 +235,7 @@ class SupplyChainContract extends Contract {
             }
 
             await ctx.productTypeList.updateProductType(productType);
-            return productType;
+            return "Successfully blocked productType with name " + productTypeName;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -274,6 +274,7 @@ class SupplyChainContract extends Contract {
             }
             
             await ctx.productTypeList.updateProductType(productType);
+            return "Successfully unblocked productType with name " + productTypeName;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -309,7 +310,7 @@ class SupplyChainContract extends Contract {
         product = Product.createInstance(productName, productTypeName, ctx.clientIdentity.getMSPID());
         product.setPending();
         await ctx.productList.addProduct(product);
-        return product;
+        return "Successfully requested registration for product with name " + productName;
     }
 
     async acceptProductRegistration(ctx, productName) {
@@ -331,7 +332,7 @@ class SupplyChainContract extends Contract {
             product.setUnblocked();
             product.setApproverOrgId(ctx.clientIdentity.getMSPID());
             await ctx.productList.updateProduct(product);
-            return product;
+            return "Successfully accepted registration for product with name " + productName;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -357,7 +358,7 @@ class SupplyChainContract extends Contract {
             product.setRefused();
             product.setRefuserOrgId(ctx.clientIdentity.getMSPID());
             await ctx.productList.updateProduct(product);
-            return product;
+            return "Successfully refused registration for product with name " + productName;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -390,7 +391,7 @@ class SupplyChainContract extends Contract {
         }
 
         await ctx.productList.updateProduct(product);
-        return product;
+        return "Successfully blocked product with name " + productName;
         
     }
 
@@ -417,7 +418,7 @@ class SupplyChainContract extends Contract {
         }
     
         await ctx.productList.updateProduct(product);
-        return product;
+        return "Successfully unblocked product with name " + productName;
             
     }
 
@@ -493,7 +494,7 @@ class SupplyChainContract extends Contract {
             throw new Error('Not all rules for this batch have been satisfied.');
 
         await ctx.batchList.addBatch(batch);
-        return batch;
+        return "Successfully registered batch with id " + batch.getId();
     }
 
     async blockBatch(ctx, batchId) {
@@ -519,7 +520,7 @@ class SupplyChainContract extends Contract {
         batch.blockBatch(ctx.clientIdentity.getMSPID());
 
         await ctx.batchList.updateBatch(batch);
-        return batch;
+        return "Successfully blocked batch with id " + batchId;
         
     }
 
@@ -540,7 +541,7 @@ class SupplyChainContract extends Contract {
         batch.unblockBatch();
 
         await ctx.batchList.updateBatch(batch);
-        return batch;
+        return "Successfully unblocked batch with id " + batchId;
             
     }
 
@@ -561,7 +562,7 @@ class SupplyChainContract extends Contract {
         batch.setPending();
         batch.setCurrentReceiverOrgId(ctx.clientIdentity.getMSPID());
         await ctx.batchList.updateBatch(batch);
-        return batch;
+        return "Successfully requested transfer for batch with id " + batchId;
         
     }
 
@@ -583,7 +584,7 @@ class SupplyChainContract extends Contract {
         batch.setCurrentOwnerOrgId(batch.getCurrentReceiverOrgId());
         batch.setCurrentReceiverOrgId(null);
         await ctx.batchList.updateBatch(batch);
-        return batch;
+        return "Successfully accepted transfer for batch with id " + batchId;
         
     }
 
@@ -604,7 +605,7 @@ class SupplyChainContract extends Contract {
         batch.setUnblocked();
         batch.setCurrentReceiverOrgId(null);
         await ctx.batchList.updateBatch(batch);
-        return batch;
+        return "Successfully refused transfer for batch with id " + batchId;
         
     }
 
@@ -641,7 +642,7 @@ class SupplyChainContract extends Contract {
             rule.setDisabled();
             rule.setCurrentDisablerOrgId(ctx.clientIdentity.getMSPID());
             await ctx.ruleList.addRule(rule);
-            return rule;
+            return "Successfully added rule with id " + rule.getId();
             
         }
         else {
@@ -668,7 +669,7 @@ class SupplyChainContract extends Contract {
             rule.setEnabled();
             rule.setCurrentDisablerOrgId(null);
             await ctx.ruleList.updateRule(rule);
-            return rule;
+            return "Successfully enabled rule with id " + ruleId;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
@@ -694,11 +695,50 @@ class SupplyChainContract extends Contract {
             rule.setDisabled();
             rule.setCurrentDisablerOrgId(ctx.clientIdentity.getMSPID());
             await ctx.ruleList.updateRule(rule);
-            return rule;
+            return "Successfully disabled rule with id " + ruleId;
         }
         else {
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
         }
+    }
+
+    async getAllProductTypes(ctx) {
+        
+        let results = await ctx.productTypeList.getAllProductTypes();
+        return results;
+    }
+
+    async getAllProducts(ctx) {
+        
+        let results = await ctx.productList.getAllProducts();
+        return results;
+    }
+
+    async getAllBatches(ctx) {
+        
+        let results = await ctx.batchList.getAllBatches();
+        return results;
+    }
+
+    async getProductTypeByName(ctx, productTypeName) {
+        
+        let productTypeKey = ProductType.makeKey([productTypeName]);
+        let productType = await ctx.productTypeList.getProductType(productTypeKey);
+        return productType;
+    }
+
+    async getProductByName(ctx, productName) {
+        
+        let productKey = Product.makeKey([productName]);
+        let product = await ctx.productList.getProduct(productKey);
+        return product;
+    }
+
+    async getBatchById(ctx, batchId) {
+        
+        let batchKey = Batch.makeKey([batchId]);
+        let batch = await ctx.batchList.getBatch(batchKey);
+        return batch;
     }
 }
 

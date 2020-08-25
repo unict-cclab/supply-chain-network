@@ -135,18 +135,16 @@ class Batch extends State {
             this.setProductBlocked();
             this.setCurrentReceiverOrgId(null);
         }
-        if(this.isUnblocked()){
+        else if(this.isUnblocked())
             this.setProductBlocked();
-        }
         else if(this.isBatchBlocked())
             this.setBatchAndProductBlocked();
     }
 
     unblockProduct() {
-        if(this.isProductBlocked()){
+        if(this.isProductBlocked())
             this.setUnblocked();
-        }
-        if(this.isBatchAndProductBlocked())
+        else if(this.isBatchAndProductBlocked())
             this.setBatchBlocked();
     }
 
@@ -156,7 +154,7 @@ class Batch extends State {
             this.setCurrentBlockerOrgId(blockerOrgId);
             this.setCurrentReceiverOrgId(null);
         }
-        if(this.isUnblocked()){
+        else if(this.isUnblocked()){
             this.setBatchBlocked();
             this.setCurrentBlockerOrgId(blockerOrgId);
         }
@@ -167,7 +165,7 @@ class Batch extends State {
             this.setUnblocked();
             this.setCurrentBlockerOrgId(null);
         }
-        if(this.isBatchAndProductBlocked()){
+        else if(this.isBatchAndProductBlocked()){
             this.setProductBlocked();
             this.setCurrentBlockerOrgId(null);
         }

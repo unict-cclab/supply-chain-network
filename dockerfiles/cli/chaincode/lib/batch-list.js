@@ -34,6 +34,13 @@ class BatchList extends StateList {
     async getBatchHistory(batchKey) {
         return this.getStateHistory(batchKey);
     }
+
+    async getAllBatches() {
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.class = Batch.getClass();
+        return this.getStatesForQueryString(JSON.stringify(queryString));
+    }
 }
 
 
