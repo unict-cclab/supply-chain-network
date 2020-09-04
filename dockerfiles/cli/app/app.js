@@ -29,7 +29,9 @@ utils.addUserToDb(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD, 'admin
 const app = express();
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Body Parser Middleware
 app.use(express.json());
