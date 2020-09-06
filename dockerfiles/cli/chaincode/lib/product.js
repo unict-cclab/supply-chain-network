@@ -137,6 +137,10 @@ class Product extends State {
             this.setProductBlocked();
             this.setCurrentBlockerOrgId(blockerOrgId);
         }
+        else if(this.isProductTypeBlocked()){
+            this.setProductAndProductTypeBlocked();
+            this.setCurrentBlockerOrgId(blockerOrgId);
+        }
     }
 
     unblockProduct() {

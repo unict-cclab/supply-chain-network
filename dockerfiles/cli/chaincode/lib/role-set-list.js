@@ -22,6 +22,13 @@ class RoleSetList extends StateList {
     async updateRoleSet(roleSet) {
         return this.updateState(roleSet);
     }
+
+    async getAllRoleSets() {
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.class = RoleSet.getClass();
+        return this.getStatesForQueryString(JSON.stringify(queryString));
+    }
 }
 
 

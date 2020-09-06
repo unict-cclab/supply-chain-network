@@ -22,6 +22,10 @@ class Rule extends State {
         return this.productTypeName;
     }
 
+    getStringValue() {
+        return this.stringValue;
+    }
+
     getJsonValue() {
         return this.jsonValue;
     }
@@ -66,8 +70,8 @@ class Rule extends State {
         return State.deserializeClass(data, RuleSet);
     }
 
-    static createInstance(id, productTypeName, jsonValue, issuerOrgId) {
-        return new Rule({ id, productTypeName, jsonValue, issuerOrgId});
+    static createInstance(id, productTypeName, stringValue, jsonValue, issuerOrgId) {
+        return new Rule({ id, productTypeName, stringValue, jsonValue, issuerOrgId});
     }
 
     static getClass() {

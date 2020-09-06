@@ -158,6 +158,10 @@ class Batch extends State {
             this.setBatchBlocked();
             this.setCurrentBlockerOrgId(blockerOrgId);
         }
+        else if(this.isProductBlocked()){
+            this.setBatchAndProductBlocked();
+            this.setCurrentBlockerOrgId(blockerOrgId);
+        }
     }
 
     unblockBatch() {

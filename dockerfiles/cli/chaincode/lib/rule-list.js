@@ -31,6 +31,13 @@ class RuleList extends StateList {
         queryString.selector.currentState = ruleStates.ENABLED;
         return this.getStatesForQueryString(JSON.stringify(queryString));
     }
+
+    async getAllRules() {
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.class = Rule.getClass();
+        return this.getStatesForQueryString(JSON.stringify(queryString));
+    }
 }
 
 

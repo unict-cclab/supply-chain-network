@@ -379,7 +379,7 @@ class SupplyChainContract extends Contract {
         if(product.getIssuerOrgId() != ctx.clientIdentity.getMSPID() && (!roleSet || !roleSet.roles.includes('admin')))
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
 
-        if(product.isProductBlocked() || product.isProductTypeBlocked() || product.isProductAndProductTypeBlocked())
+        if(product.isProductBlocked() || product.isProductAndProductTypeBlocked())
             throw new Error('Product ' +  productName  + ' is just blocked.');
             
         product.blockProduct(ctx.clientIdentity.getMSPID());
@@ -511,7 +511,7 @@ class SupplyChainContract extends Contract {
         if(batch.getCurrentOwnerOrgId() != ctx.clientIdentity.getMSPID() && (!roleSet || !roleSet.roles.includes('admin')))
             throw new Error('Org id ' +  ctx.clientIdentity.getMSPID()  + ' does not have permission to execute this operation.');
 
-        if(batch.isBatchBlocked() || batch.isProductBlocked() || batch.isBatchAndProductBlocked())
+        if(batch.isBatchBlocked() || batch.isBatchAndProductBlocked())
             throw new Error('Batch with id ' +  batchId  + ' is just blocked.');
             
         if(batch.isProcessed())
@@ -638,7 +638,7 @@ class SupplyChainContract extends Contract {
             if(!jsonRule)
                 throw new Error('Error in parsing rule');
             
-            let rule = Rule.createInstance(productTypeName.concat(':', ctx.stub.getTxID()), productTypeName, jsonRule, ctx.clientIdentity.getMSPID());
+            let rule = Rule.createInstance(productTypeName.concat(':', ctx.stub.getTxID()), productTypeName, ruleString, jsonRule, ctx.clientIdentity.getMSPID());
             rule.setDisabled();
             rule.setCurrentDisablerOrgId(ctx.clientIdentity.getMSPID());
             await ctx.ruleList.addRule(rule);
@@ -717,6 +717,18 @@ class SupplyChainContract extends Contract {
     async getAllBatches(ctx) {
         
         let results = await ctx.batchList.getAllBatches();
+        return results;
+    }
+
+    async getAllRoleSets(ctx) {
+        
+        let results = await ctx.roleSetList.getAllRoleSets();
+        return results;
+    }
+
+    async getAllRules(ctx) {
+        
+        let results = await ctx.ruleList.getAllRules();
         return results;
     }
 
