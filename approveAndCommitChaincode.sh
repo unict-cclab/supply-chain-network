@@ -6,7 +6,7 @@ get_pods() {
 # Exit on errors
 set -e
 
-export CC_PACKAGE_ID=supplyChain_1:79291080786cf3fa6abd547d5493cd2d69b242aa4d664cdd67f236ad7e0b0fd2
+export CC_PACKAGE_ID=supplyChain_1:adb5232e90bf099dda14f018074d38d8f07da70daa49228360abc119a661ca1c
 # Use CLI shell to create channel
 
 echo "Approve chaincode on RegulatoryDepartment"
