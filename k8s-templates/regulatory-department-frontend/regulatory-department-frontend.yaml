@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-regulatory-department
+  labels:
+    app: frontend-regulatory-department
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend-regulatory-department
+  ports:
+    - protocol: TCP
+      targetPort: 80
+      port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-regulatory-department
+  labels:
+    app: frontend-regulatory-department
+spec:
+  selector:
+    matchLabels:
+      app: frontend-regulatory-department
+  template:
+    metadata:
+      labels:
+        app: frontend-regulatory-department
+    spec:
+      containers:
+        - name: frontend-regulatory-department
+          image: frontend
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          envFrom:
+          - configMapRef:
+              name: regulatory-department-frontend-env-file
