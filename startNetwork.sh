@@ -1269,9 +1269,29 @@ create-channel() {
   kubectl exec -n supply-chain-network $CLI_RETAILER -- /bin/bash -c "/tmp/hyperledger/scripts/addAnchorPeer.sh retailer"
 }
 
-start-ingress() {
+start-ingresses() {
   kubectl create -f "$K8S/ingress/ingress.yaml" -n supply-chain-network
+  kubectl create -f "$K8S/ingress-frontend/ingress-frontend.yaml" -n supply-chain-network
   minikube addons enable ingress
+}
+
+start-frontends() {
+  sep
+  command "Building frontend image"
+  sep
+
+  eval $(minikube docker-env)
+  docker build -t frontend ./dockerfiles/frontend
+
+  sep
+  command "Starting RegulatoryDepartment FRONTEND"
+  sep
+
+  kubectl create configmap regulatory-department-frontend-env-file --from-env-file=$K8S/regulatory-department-frontend/regulatory-department-frontend-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap regulatory-department-frontend-env-file -o yaml > $K8S/regulatory-department-frontend/regulatory-department-frontend-configmap.yml -n supply-chain-network
+
+  kubectl apply -f "$K8S/regulatory-department-frontend/regulatory-department-frontend.yaml" -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=frontend-regulatory-department --timeout=240s -n supply-chain-network
 }
 
 
@@ -1333,7 +1353,9 @@ sleep 5
 
 create-channel
 
-start-ingress
+start-frontends
+
+start-ingresses
 
 sep
 
