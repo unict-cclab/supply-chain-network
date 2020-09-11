@@ -1292,6 +1292,46 @@ start-frontends() {
 
   kubectl apply -f "$K8S/regulatory-department-frontend/regulatory-department-frontend.yaml" -n supply-chain-network
   kubectl wait --for=condition=ready pod -l app=frontend-regulatory-department --timeout=240s -n supply-chain-network
+
+  sep
+  command "Starting Producer FRONTEND"
+  sep
+
+  kubectl create configmap producer-frontend-env-file --from-env-file=$K8S/producer-frontend/producer-frontend-env-file.properties -n supply-chain-network --save-config
+  kubectl get configmap producer-frontend-env-file -o yaml > $K8S/producer-frontend/producer-frontend-configmap.yml -n supply-chain-network
+
+  kubectl apply -f "$K8S/producer-frontend/producer-frontend.yaml" -n supply-chain-network
+  kubectl wait --for=condition=ready pod -l app=frontend-producer --timeout=240s -n supply-chain-network
+
+  #sep
+  #command "Starting Manufacturer FRONTEND"
+  #sep
+
+  #kubectl create configmap manufacturer-frontend-env-file --from-env-file=$K8S/manufacturer-frontend/manufacturer-frontend-env-file.properties -n supply-chain-network --save-config
+  #kubectl get configmap manufacturer-frontend-env-file -o yaml > $K8S/manufacturer-frontend/manufacturer-frontend-configmap.yml -n supply-chain-network
+
+  #kubectl apply -f "$K8S/manufacturer-frontend/manufacturer-frontend.yaml" -n supply-chain-network
+  #kubectl wait --for=condition=ready pod -l app=frontend-manufacturer --timeout=240s -n supply-chain-network
+
+  #sep
+  #command "Starting Deliverer FRONTEND"
+  #sep
+
+  #kubectl create configmap deliverer-frontend-env-file --from-env-file=$K8S/deliverer-frontend/deliverer-frontend-env-file.properties -n supply-chain-network --save-config
+  #kubectl get configmap deliverer-frontend-env-file -o yaml > $K8S/deliverer-frontend/deliverer-frontend-configmap.yml -n supply-chain-network
+
+  #kubectl apply -f "$K8S/deliverer-frontend/deliverer-frontend.yaml" -n supply-chain-network
+  #kubectl wait --for=condition=ready pod -l app=frontend-deliverer --timeout=240s -n supply-chain-network
+
+  #sep
+  #command "Starting Retailer FRONTEND"
+  #sep
+
+  #kubectl create configmap retailer-frontend-env-file --from-env-file=$K8S/retailer-frontend/retailer-frontend-env-file.properties -n supply-chain-network --save-config
+  #kubectl get configmap retailer-frontend-env-file -o yaml > $K8S/retailer-frontend/retailer-frontend-configmap.yml -n supply-chain-network
+
+  #kubectl apply -f "$K8S/retailer-frontend/retailer-frontend.yaml" -n supply-chain-network
+  #kubectl wait --for=condition=ready pod -l app=frontend-retailer --timeout=240s -n supply-chain-network
 }
 
 

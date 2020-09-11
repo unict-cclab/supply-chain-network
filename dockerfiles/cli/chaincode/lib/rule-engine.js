@@ -16,7 +16,9 @@ class RuleEngine {
     
     static getJsonRuleFromRuleString(ruleString) {
         try{
-            return transformJS(ruleString);
+            let jsonRule = transformJS(ruleString);
+            RuleEngine.verifyJsonRule(jsonRule, {});
+            return jsonRule;
         } catch (err){
             return null;
         }
