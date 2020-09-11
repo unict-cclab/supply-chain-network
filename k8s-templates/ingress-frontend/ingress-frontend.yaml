@@ -20,3 +20,27 @@ spec:
       - backend:
           serviceName: frontend-regulatory-department
           servicePort: 80
+  - host: producer.local
+    http:
+      paths:
+      - backend:
+          serviceName: frontend-producer
+          servicePort: 80
+  - host: manufacturer.local
+    http:
+      paths:
+      - backend:
+          serviceName: frontend-manufacturer
+          servicePort: 80
+  - host: deliverer.local
+    http:
+      paths:
+      - backend:
+          serviceName: frontend-deliverer
+          servicePort: 80
+  - host: retailer.local
+    http:
+      paths:
+      - backend:
+          serviceName: frontend-retailer
+          servicePort: 80

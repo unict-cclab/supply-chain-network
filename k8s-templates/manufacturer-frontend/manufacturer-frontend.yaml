@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-manufacturer
+  labels:
+    app: frontend-manufacturer
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend-manufacturer
+  ports:
+    - protocol: TCP
+      targetPort: 80
+      port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-manufacturer
+  labels:
+    app: frontend-manufacturer
+spec:
+  selector:
+    matchLabels:
+      app: frontend-manufacturer
+  template:
+    metadata:
+      labels:
+        app: frontend-manufacturer
+    spec:
+      containers:
+        - name: frontend-manufacturer
+          image: frontend
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          envFrom:
+          - configMapRef:
+              name: manufacturer-frontend-env-file
