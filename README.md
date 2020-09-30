@@ -7,7 +7,7 @@ This is an example of a blockchain traceability system for agri-food supply chai
 To start the network of the system run the following script:
 
 ```
-    ./startNetwork.sh
+./startNetwork.sh
 ```
 
 - Install chaincode
@@ -15,7 +15,7 @@ To start the network of the system run the following script:
 To install the chaincode inside peers of each organization run the following script:
 
 ```
-	./installChaincode.sh
+./installChaincode.sh
 ```
 
 - Approve and commit chaincode definition
@@ -23,7 +23,7 @@ To install the chaincode inside peers of each organization run the following scr
 To approve and commit the chaincode definition for each organization run the following script:
 
 ```
-    ./approveAndCommitChaincode.sh
+./approveAndCommitChaincode.sh
 ```
 
 - Expose cluster 
@@ -31,7 +31,7 @@ To approve and commit the chaincode definition for each organization run the fol
 To expose cluster outside the minikube virtual machine run the following scripts:
 
 ```
-    ./exposeCluster.sh
+./exposeCluster.sh
 ```
 
 - Interact with the system
@@ -39,9 +39,9 @@ To expose cluster outside the minikube virtual machine run the following scripts
 Below there are domain name and port for web servers of each organization:
 
 ```
-    regulatory-department.local:51926
-    producer.local:51926
-    manufacturer.local:51926
-    deliverer.local:51926
-    retailer.local:51926
+regulatory-department.local:51926
+producer.local:51926
+manufacturer.local:51926
+deliverer.local:51926
+retailer.local:51926
 ```
