@@ -39,7 +39,7 @@ To expose cluster outside the minikube virtual machine run the following scripts
 Below there are domain name and port for web servers of each organization:
 
 ```
-	regulatory-department.local:51926
+    regulatory-department.local:51926
     producer.local:51926
     manufacturer.local:51926
     deliverer.local:51926
