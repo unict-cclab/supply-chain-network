@@ -3,7 +3,6 @@ set -e
 
 # Function definitions
 get_pods() {
-  #1 - app name
   kubectl get pods -l app=$1 --field-selector status.phase=Running -n supply-chain-network --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -n 1
 }
 
@@ -16,7 +15,6 @@ sep() {
 }
 
 command() {
-  #1 - command to display
   echo "$1"
 }
 
@@ -1334,6 +1332,7 @@ start-frontends() {
   #kubectl wait --for=condition=ready pod -l app=frontend-retailer --timeout=240s -n supply-chain-network
 }
 
+source ./config.sh
 
 # Debug commands using -d flag
 export DEBUG=""
@@ -1342,8 +1341,8 @@ if [[ $1 == "-d" ]]; then
   export DEBUG="-d"
 fi
 
-# Set environment variables
-source ./env.sh
+# Use configuration file to generate kubernetes setup from the template
+./applyConfig.sh
 
 # Start minikube
 command "Starting Network"
@@ -1356,9 +1355,6 @@ mkdir -p $TMP_FOLDER/hyperledger
 # Mount tmp folder
 minikube mount $TMP_FOLDER/hyperledger:/hyperledger &
 sleep 3
-
-# Use configuration file to generate kubernetes setup from the template
-./applyConfig.sh
 
 small_sep
 kubectl create -f $K8S/namespace.yaml

@@ -1,12 +1,10 @@
 get_pods() {
-  #1 - app name
   kubectl get pods -l app=$1 --field-selector status.phase=Running -n supply-chain-network --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | head -n 1
 }
 
-# Exit on errors
 set -e
 
-source ./env.sh
+source ./config.sh
 
 echo "Package chaincode on CLI_REGULATORY_DEPARTMENT"
 kubectl exec -n supply-chain-network $(get_pods "cli-regulatory-department") -- /bin/bash -c "/tmp/hyperledger/scripts/packageChaincode.sh"

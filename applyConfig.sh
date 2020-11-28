@@ -1,9 +1,4 @@
-source ./env.sh
-source ./settings.sh
-
-if test -f ./user-settings.sh; then
-  source ./user-settings.sh
-fi
+source ./config.sh
 
 if [ ! -d "$K8S" ]; then
   mkdir -p $K8S
