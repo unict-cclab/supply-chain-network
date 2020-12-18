@@ -1,6 +1,14 @@
 # Blockchain traceability system for agri-food supply chain
 
-This is an example of a blockchain traceability system for agri-food supply chain implemented with Hyperledger Fabric platform. System components are deployed inside a Kubernetes cluster. Do the following steps to deploy blockchain system, deploy chaincode and start client application.
+This is an example of a blockchain traceability system for agri-food supply chain implemented with Hyperledger Fabric platform. System components are deployed inside a Kubernetes cluster. Assuming you are using minikube do the following steps to deploy blockchain system, deploy chaincode and start client application.
+
+- Create cluster
+
+If you do not have started yet a Kubernetes cluster run the following command:
+
+```
+minikube start --cpus=4 --memory 6120
+```
 
 - Start network
 
@@ -26,22 +34,18 @@ To approve and commit the chaincode definition for each organization run the fol
 ./approveAndCommitChaincode.sh
 ```
 
-- Expose cluster 
-
-To expose cluster outside the minikube virtual machine run the following scripts:
-
-```
-./exposeCluster.sh
-```
-
 - Interact with the system
 
-Below there are domain name and port for web servers of each organization:
+Execute the following command to add hostnames inside the hosts file:
 
 ```
-regulatory-department.local:51926
-producer.local:51926
-manufacturer.local:51926
-deliverer.local:51926
-retailer.local:51926
+echo "$(minikube ip) \
+supply-chain-network.local \
+regulatory-department.local \
+producer.local \
+manufacturer.local \
+deliverer.local \
+retailer.local" \
+| sudo tee -a /etc/hosts
 ```
+Use the url (organization_name).local:80 to connect to the corresponding organization frontend application
