@@ -73,10 +73,3 @@ spec:
         - name: docker-mount
           hostPath:
             path: /var/run/
-      initContainers:
-        - name: wait-mongo
-          image: busybox
-          command: ['sh', '-c', 'until nslookup $(DB_HOST); do echo waiting for $(DB_HOST); sleep 2; done;']
-          envFrom:
-          - configMapRef:
-              name: manufacturer-cli-env-file
